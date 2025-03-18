@@ -1,4 +1,4 @@
-package com.ea.backend.core.reservation.domain.entity;
+package com.ea.backend.domain.reservation.enterprise.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

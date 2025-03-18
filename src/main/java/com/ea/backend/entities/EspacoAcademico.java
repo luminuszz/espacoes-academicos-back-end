@@ -1,6 +1,6 @@
 package com.ea.backend.entities;
 
-import reactor.core.publisher.Timed;
+import lombok.Getter;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+@Getter
 public class EspacoAcademico implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
@@ -37,72 +38,36 @@ public class EspacoAcademico implements Serializable {
         this.criadoEm = criadoEm;
     }
 
-    public int getId() {
-        return id;
-    }
-
     public void setId(int id) {
         this.id = id;
-    }
-
-    public String getSigla() {
-        return sigla;
     }
 
     public void setSigla(String sigla) {
         this.sigla = sigla;
     }
 
-    public String getNome() {
-        return nome;
-    }
-
     public void setNome(String nome) {
         this.nome = nome;
-    }
-
-    public String getDescricao() {
-        return descricao;
     }
 
     public void setDescricao(String descricao) {
         this.descricao = descricao;
     }
 
-    public int getCapacidade() {
-        return capacidade;
-    }
-
     public void setCapacidade(int capacidade) {
         this.capacidade = capacidade;
-    }
-
-    public boolean isDisponivel() {
-        return disponivel;
     }
 
     public void setDisponivel(boolean disponivel) {
         this.disponivel = disponivel;
     }
 
-    public Timestamp getCriadoEm() {
-        return criadoEm;
-    }
-
     public void setCriadoEm(Timestamp criadoEm) {
         this.criadoEm = criadoEm;
     }
 
-    public Administrador getAdministradorEspaco() {
-        return administradorEspaco;
-    }
-
     public void setAdministradorEspaco(Administrador administradorEspaco) {
         this.administradorEspaco = administradorEspaco;
-    }
-
-    public List<Reserva> getReservasEspaco() {
-        return reservasEspaco;
     }
 
     public void setReservasEspaco(List<Reserva> reservasEspaco) {

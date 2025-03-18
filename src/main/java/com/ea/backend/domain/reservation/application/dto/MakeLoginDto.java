@@ -1,25 +1,21 @@
-package com.ea.backend.core.reservation.application.dto;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotNull;
+package com.ea.backend.domain.reservation.application.dto;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
-
 @Getter
 @Setter
-public class CreateUserDto {
-    @NotNull
-    private String name;
+public class MakeLoginDto {
 
-    @NotNull
-    private String password;
-
-    @NotNull
+    @NotBlank
     @Email
     private String email;
 
     @NotNull
-    private String role;
+    @NotBlank
+    private String password;
 
 }

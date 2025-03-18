@@ -1,14 +1,13 @@
-package com.ea.backend.core.reservation.domain.entity;
+package com.ea.backend.domain.reservation.enterprise.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 import java.util.UUID;
 
-@Entity
+@Entity(name = "users")
 @Table(name = "users")
 @Getter
 @Setter
@@ -34,12 +33,12 @@ public class User implements Serializable {
     private String passwordHash;
 
 
-
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = false ,columnDefinition = "TEXT")
     private UserRole role;
 
     @OneToMany(targetEntity = Reservation.class)
     private List<Reservation> reservations;
+
 
 }
