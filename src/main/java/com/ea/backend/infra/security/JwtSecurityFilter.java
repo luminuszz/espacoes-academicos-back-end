@@ -6,6 +6,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -26,29 +27,25 @@ public class JwtSecurityFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        var token = extractTokeFromRequest(request);
+        try {
+            var token = extractTokeFromRequest(request);
 
-        if(token == null) {
-            filterChain.doFilter(request, response);
-            return;
-        }
+            if(token != null) {
+                var userEmail = tokenService.validateToken(token);
 
-        var userEmail = tokenService.validateToken(token);
+                UserDetails existsUser = this.userDetailsService.loadUserByUsername(userEmail);
 
-        UserDetails existsUser = this.userDetailsService.loadUserByUsername(userEmail);
-
-         if(existsUser == null) {
-             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-             filterChain.doFilter(request, response);
-             return;
-         }
-
-         request.setAttribute("user", existsUser);
-
-
-        SecurityContextHolder.getContext().setAuthentication(
-                new UsernamePasswordAuthenticationToken(existsUser, null  ,existsUser.getAuthorities()));
-
+                if(existsUser != null) {
+                    request.setAttribute("user", existsUser);
+                    SecurityContextHolder.getContext().setAuthentication(
+                            new UsernamePasswordAuthenticationToken(existsUser, null  ,existsUser.getAuthorities()));
+                } else {
+                    throw new ServletException("Invalid token");
+                }
+            }
+        } catch (RuntimeException e) {
+                filterChain.doFilter(request, response);
+            }
 
         filterChain.doFilter(request, response);
 

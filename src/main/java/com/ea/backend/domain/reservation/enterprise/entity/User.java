@@ -37,7 +37,7 @@ public class User implements Serializable {
     @Column(nullable = false ,columnDefinition = "TEXT")
     private UserRole role;
 
-    @OneToMany(targetEntity = Reservation.class)
+    @OneToMany(targetEntity = Reservation.class, mappedBy = "user")
     private List<Reservation> reservations;
 
 

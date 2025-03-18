@@ -1,8 +1,8 @@
 package com.ea.backend.infra.http;
 import com.ea.backend.domain.reservation.application.dto.CreateUserDto;
 import com.ea.backend.domain.reservation.application.services.UserService;
-import com.ea.backend.domain.reservation.enterprise.entity.User;
-import com.ea.backend.infra.security.UserAuthenticated;
+import com.ea.backend.domain.space.application.AcademicSpaceService;
+import com.ea.backend.domain.space.application.dto.CreateAcademicSpaceDto;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,26 +13,34 @@ import org.springframework.http.ResponseEntity;
 
 
 @RestController()
-@RequestMapping("/admin/users")
-public class UserController {
+@RequestMapping("/admin")
+public class AdminController {
 
     private final UserService userService;
+    private final AcademicSpaceService academicSpaceService;
 
-    public UserController(UserService userService) {
+    public AdminController(UserService userService, AcademicSpaceService academicSpaceService) {
         this.userService = userService;
+        this.academicSpaceService = academicSpaceService;
 
     }
 
-    @PostMapping
+    @PostMapping("/users")
     public ResponseEntity createUser(@RequestBody @Valid CreateUserDto dto,  HttpServletRequest request) {
             try {
-                this.userService.create(dto);
+                this.userService.createAdmin(dto);
 
-                return ResponseEntity.ok().build();
+               return ResponseEntity.ok().body("User created successfully");
             } catch (Exception e) {
                 return ResponseEntity.badRequest().body(e.getMessage());
             }
+    }
 
 
+    @PostMapping("/spaces")
+    public ResponseEntity createSpace(@RequestBody @Valid CreateAcademicSpaceDto dto) {
+        this.academicSpaceService.createSpace(dto);
+
+        return ResponseEntity.ok().body("Space created successfully");
     }
 }

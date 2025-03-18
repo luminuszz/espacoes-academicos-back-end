@@ -1,11 +1,11 @@
 package com.ea.backend.domain.reservation.enterprise.entity;
+import com.ea.backend.domain.space.enterprise.AcademicSpace;
+import com.ea.backend.shared.DomainEntity;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-
-import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -13,37 +13,29 @@ import java.util.UUID;
 
 @Setter
 @Getter
-@Entity
 @Table(name = "reservations")
-public class Reservation implements Serializable {
-    @Serial
-    private static final long serialVersionUID = 1L;
+@Entity(name = "reservations")
+@AllArgsConstructor
+@NoArgsConstructor
+public class Reservation extends DomainEntity implements Serializable {
 
-    @Id()
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
-
-    @Column(nullable = false, unique = true)
-    private String  room_name;
-
-    @Column(nullable = false, columnDefinition = "TEXT")
-    private String description;
+    @Id
+    @GeneratedValue(strategy =  GenerationType.UUID)
+    private String id;
 
     @Column(nullable = false)
-    private int capacity;
+    private LocalDateTime startDateTime;
 
-    @CreatedDate
     @Column(nullable = false)
-    private LocalDateTime createdDate;
+    private LocalDateTime endDateTime;
 
 
-    @LastModifiedDate
-    @Column(nullable = false)
-    private LocalDateTime updatedDate;
+    @ManyToOne
+    @JoinColumn(name = "academic_space_id", nullable = false)
+    private AcademicSpace academicSpace;
 
 
-    @ManyToOne(targetEntity = User.class)
-    @JoinColumn()
+    @ManyToOne()
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
-
 }

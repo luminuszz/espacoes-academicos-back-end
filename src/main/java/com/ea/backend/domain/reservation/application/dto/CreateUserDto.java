@@ -17,8 +17,4 @@ public class CreateUserDto {
     @NotBlank
     @Email
     private String email;
-
-
-    private UserRole role;
-
 }

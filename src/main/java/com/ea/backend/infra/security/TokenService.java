@@ -16,8 +16,6 @@ public class TokenService {
 
     @Value("${api.security.jwt.secret}")
     private String secret;
-
-
     private final String issuer = "EA";
 
 
@@ -37,7 +35,7 @@ public class TokenService {
                   .sign(algorithm);
 
       }catch (JWTCreationException exception) {
-         throw new IllegalArgumentException("Error on create token " + exception.getLocalizedMessage());
+         throw new IllegalArgumentException("Error on createAdmin token " + exception.getLocalizedMessage());
       }
 
     }
