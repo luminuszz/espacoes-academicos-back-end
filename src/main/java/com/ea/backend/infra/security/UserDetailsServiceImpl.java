@@ -1,7 +1,6 @@
 package com.ea.backend.infra.security;
 
-import com.ea.backend.domain.reservation.application.repository.UserRepository;
-import com.ea.backend.domain.reservation.application.services.UserService;
+import com.ea.backend.domain.user.application.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

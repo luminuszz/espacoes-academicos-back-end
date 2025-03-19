@@ -24,13 +24,24 @@ public class AcademicSpace extends DomainEntity implements Serializable {
     @GeneratedValue(strategy =  GenerationType.UUID)
     protected UUID id;
 
-    @Column(nullable = false, unique = true, name = "room_name")
+    @Column(nullable = false, name = "room_name")
     private String  roomName;
+
+    @Column(nullable = false, unique = true)
+    private String acronym;
 
     @Column(nullable = false, columnDefinition = "TEXT")
     private String description;
 
     @Column(nullable = false)
     private int capacity;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false ,columnDefinition = "VARCHAR(255) DEFAULT 'AVAILABLE'")
+    private SpaceStatus status;
+
+    public Boolean isAvailable() {
+        return this.status.equals(SpaceStatus.AVAILABLE);
+    }
 
 }

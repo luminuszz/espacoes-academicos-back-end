@@ -1,10 +1,11 @@
-package com.ea.backend.domain.reservation.application.services;
+package com.ea.backend.domain.user.application;
 
 
-import com.ea.backend.domain.reservation.application.dto.CreateUserDto;
-import com.ea.backend.domain.reservation.application.repository.UserRepository;
-import com.ea.backend.domain.reservation.enterprise.entity.User;
-import com.ea.backend.domain.reservation.enterprise.entity.UserRole;
+import com.ea.backend.domain.user.application.dto.CreateUserDto;
+import com.ea.backend.domain.user.enterprise.entity.User;
+import com.ea.backend.domain.user.enterprise.entity.UserRole;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -61,11 +62,15 @@ public class UserService {
     }
 
 
-
     public User findByEmail(String email){
         var  user = this.userRepository.findUserByEmail(email);
 
         return user.orElse(null);
     }
+
+    public Page<User> fetchTeachersPaginated(int page, int pageSize) {
+        return this.userRepository.findAllByRole(UserRole.TEACHER, PageRequest.of(page, pageSize));
+    }
+
 
 }

@@ -1,10 +1,7 @@
 package com.ea.backend.infra.security;
 
-import com.ea.backend.domain.reservation.enterprise.entity.User;
-import com.ea.backend.domain.reservation.enterprise.entity.UserRole;
-import lombok.AllArgsConstructor;
+import com.ea.backend.domain.user.enterprise.entity.User;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -22,6 +19,7 @@ public class UserAuthenticated implements UserDetails {
     public  UserAuthenticated(User user) {
         this.user = user;
     }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return switch (user.getRole()) {

@@ -8,11 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
@@ -23,6 +19,17 @@ public class ReservationController {
     @Autowired
     private ReservationService reservationService;
 
+    @PatchMapping("/{reservationId}/checkout")
+    public ResponseEntity updateReservationStatus(@PathVariable String reservationId) {
+        try {
+            this.reservationService.markReservationAsCheckedOut(UUID.fromString(reservationId));
+
+            return ResponseEntity.ok().body("Reservation updated successfully");
+
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 
     @PostMapping
     public ResponseEntity createReservation(@RequestBody @Valid CreateReservationDto dto, HttpServletRequest request) {
@@ -40,9 +47,7 @@ public class ReservationController {
 
           return ResponseEntity.badRequest().body(e.getLocalizedMessage());
         }
-
-
-
     }
+
 
 }

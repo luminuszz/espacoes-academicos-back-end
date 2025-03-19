@@ -27,4 +27,8 @@ public class CreateAcademicSpaceDto {
     @Min(1)
     private Integer capacity;
 
+
+    @NotNull
+    @NotBlank
+    private String acronym;
 }

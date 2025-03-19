@@ -1,4 +1,4 @@
-package com.ea.backend.domain.reservation.enterprise.entity;
+package com.ea.backend.domain.user.enterprise.entity;
 
 import lombok.Getter;
 

@@ -7,6 +7,7 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -16,6 +17,7 @@ public class TokenService {
 
     @Value("${api.security.jwt.secret}")
     private String secret;
+
     private final String issuer = "EA";
 
 
@@ -62,7 +64,7 @@ public class TokenService {
     }
 
     private Instant generateExpirationDate() {
-        return LocalDateTime.now().plusHours(2).toInstant(ZoneOffset.of("-03:00"));
+        return LocalDateTime.now().plusHours(3).toInstant(ZoneOffset.of("-03:00"));
     }
 
 }

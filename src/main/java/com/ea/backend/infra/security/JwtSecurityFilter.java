@@ -1,12 +1,10 @@
 package com.ea.backend.infra.security;
 
-import com.ea.backend.domain.reservation.application.services.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -27,26 +25,21 @@ public class JwtSecurityFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        try {
-            var token = extractTokeFromRequest(request);
-
+        var token = extractTokeFromRequest(request);
             if(token != null) {
                 var userEmail = tokenService.validateToken(token);
 
                 UserDetails existsUser = this.userDetailsService.loadUserByUsername(userEmail);
 
-                if(existsUser != null) {
-                    request.setAttribute("user", existsUser);
-                    SecurityContextHolder.getContext().setAuthentication(
-                            new UsernamePasswordAuthenticationToken(existsUser, null  ,existsUser.getAuthorities()));
-                } else {
-                    throw new ServletException("Invalid token");
-                }
-            }
-        } catch (RuntimeException e) {
-                filterChain.doFilter(request, response);
-            }
+                request.setAttribute("user", existsUser);
 
+                System.out.println(existsUser.getAuthorities());
+
+                var newAuthContext = new UsernamePasswordAuthenticationToken(existsUser, null, existsUser.getAuthorities());
+
+                SecurityContextHolder.getContext().setAuthentication(newAuthContext);
+
+            }
         filterChain.doFilter(request, response);
 
     }
@@ -55,10 +48,9 @@ public class JwtSecurityFilter extends OncePerRequestFilter {
 
     private String
     extractTokeFromRequest(HttpServletRequest request) {
-        var authorization = request.getHeader("Authorization");
+        String authorization = request.getHeader("Authorization");
 
         if (authorization == null) return null;
-
 
 
         return authorization.replace("Bearer ", "");

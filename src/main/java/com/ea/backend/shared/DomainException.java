@@ -1,0 +1,7 @@
+package com.ea.backend.shared;
+
+public class DomainException extends RuntimeException {
+    public DomainException(String message) {
+        super(message);
+    }
+}
