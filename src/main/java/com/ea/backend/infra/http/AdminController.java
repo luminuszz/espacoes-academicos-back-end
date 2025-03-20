@@ -31,7 +31,7 @@ public class AdminController {
     }
 
     @PostMapping("/users")
-    public ResponseEntity createAdminUser(@RequestBody @Valid CreateUserDto dto, HttpServletRequest request) {
+    public ResponseEntity<?> createAdminUser(@RequestBody @Valid CreateUserDto dto, HttpServletRequest request) {
             try {
                 this.userService.createAdmin(dto);
 
@@ -57,7 +57,7 @@ public class AdminController {
 
 
     @GetMapping("/spaces")
-    public ResponseEntity getSpacesPaginated(
+    public ResponseEntity<?> getSpacesPaginated(
             @Valid
             @RequestParam("page") int page,
             @RequestParam("pageSize") int pageSize
@@ -73,7 +73,7 @@ public class AdminController {
 
 
     @PostMapping("/spaces")
-    public ResponseEntity createSpace(@RequestBody @Valid CreateAcademicSpaceDto dto) {
+    public ResponseEntity<?> createSpace(@RequestBody @Valid CreateAcademicSpaceDto dto) {
         try {
             this.academicSpaceService.createSpace(dto);
 
@@ -87,7 +87,7 @@ public class AdminController {
 
 
     @PatchMapping("/spaces/{spaceId}/status")
-    public ResponseEntity changeSpaceStatus(@PathVariable String spaceId , @RequestBody @Valid ChangeSpaceStatusDto requestBody) {
+    public ResponseEntity<?> changeSpaceStatus(@PathVariable String spaceId, @RequestBody @Valid ChangeSpaceStatusDto requestBody) {
 
        try {
            requestBody.setSpaceId(spaceId);
@@ -102,7 +102,7 @@ public class AdminController {
 
 
     @PatchMapping("/reservations/{reservationId}/cancel")
-    public ResponseEntity cancelReservation(@PathVariable String reservationId) {
+    public ResponseEntity<?> cancelReservation(@PathVariable @Valid String reservationId) {
 
         this.reservationService.cancelReservation(UUID.fromString(reservationId));
 

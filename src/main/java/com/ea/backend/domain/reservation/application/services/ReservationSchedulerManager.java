@@ -13,7 +13,7 @@ public class ReservationSchedulerManager {
     private ReservationService reservationService;
 
 
-    @Scheduled(cron = "0 0 * * * *")
+    @Scheduled(cron = "0 0 3 * * *", zone = "America/Bahia")
     public void runUpdateReservationsStatusBatch() {
         this.reservationService.updateExpiredReservations();
     }

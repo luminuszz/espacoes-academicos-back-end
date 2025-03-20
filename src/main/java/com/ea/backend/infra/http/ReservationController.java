@@ -20,9 +20,12 @@ public class ReservationController {
     private ReservationService reservationService;
 
     @PatchMapping("/{reservationId}/checkout")
-    public ResponseEntity updateReservationStatus(@PathVariable String reservationId) {
+    public ResponseEntity<?> updateReservationStatus(@PathVariable String reservationId, HttpServletRequest request) {
         try {
-            this.reservationService.markReservationAsCheckedOut(UUID.fromString(reservationId));
+
+            var user = (UserAuthenticated) request.getAttribute("user");
+
+            this.reservationService.markReservationAsCheckedOut(UUID.fromString(reservationId), user.getUser().getId());
 
             return ResponseEntity.ok().body("Reservation updated successfully");
 
@@ -32,7 +35,7 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity createReservation(@RequestBody @Valid CreateReservationDto dto, HttpServletRequest request) {
+    public ResponseEntity<?> createReservation(@RequestBody @Valid CreateReservationDto dto, HttpServletRequest request) {
 
         try {
             var authenticatedUser = (UserAuthenticated) request.getAttribute("user");
