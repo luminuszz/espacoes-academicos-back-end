@@ -4,6 +4,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -11,8 +12,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-
-import java.io.IOException;
 
 @Component
 public class JwtSecurityFilter extends OncePerRequestFilter {
@@ -22,30 +21,31 @@ public class JwtSecurityFilter extends OncePerRequestFilter {
     @Autowired
     private UserDetailsService userDetailsService;
 
-    @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+  @Override
+  protected void doFilterInternal(
+      HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+      throws IOException, ServletException {
 
         var token = extractTokeFromRequest(request);
 
-        if (token != null) {
-                var userEmail = tokenService.validateToken(token);
+    if (token != null) {
 
-                UserDetails existsUser = this.userDetailsService.loadUserByUsername(userEmail);
+      var userEmail = tokenService.validateToken(token);
 
-                request.setAttribute("user", existsUser);
+      UserDetails existsUser = this.userDetailsService.loadUserByUsername(userEmail);
 
-                System.out.println(existsUser.getAuthorities());
+      request.setAttribute("user", existsUser);
 
-                var newAuthContext = new UsernamePasswordAuthenticationToken(existsUser, null, existsUser.getAuthorities());
+      System.out.println(existsUser.getAuthorities());
 
-                SecurityContextHolder.getContext().setAuthentication(newAuthContext);
+      var newAuthContext =
+          new UsernamePasswordAuthenticationToken(existsUser, null, existsUser.getAuthorities());
 
-            }
-        filterChain.doFilter(request, response);
-
+      SecurityContextHolder.getContext().setAuthentication(newAuthContext);
     }
 
-
+    filterChain.doFilter(request, response);
+    }
 
     private String
     extractTokeFromRequest(HttpServletRequest request) {

@@ -4,16 +4,15 @@ import com.ea.backend.domain.reservation.application.services.ReservationService
 import com.ea.backend.domain.space.application.dto.ChangeSpaceStatusDto;
 import com.ea.backend.domain.space.application.dto.CreateAcademicSpaceDto;
 import com.ea.backend.domain.space.application.service.AcademicSpaceService;
+import com.ea.backend.domain.user.application.MetricService;
 import com.ea.backend.domain.user.application.UserService;
 import com.ea.backend.domain.user.application.dto.CreateUserDto;
 import com.ea.backend.infra.http.model.PaginatedResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import java.util.UUID;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.UUID;
-
 
 @RestController()
 @RequestMapping("/admin")
@@ -22,12 +21,17 @@ public class AdminController {
     private final UserService userService;
     private final AcademicSpaceService academicSpaceService;
     private  final ReservationService reservationService;
+  private final MetricService metricService;
 
-    public AdminController(UserService userService, AcademicSpaceService academicSpaceService, ReservationService reservationService) {
+  public AdminController(
+      UserService userService,
+      AcademicSpaceService academicSpaceService,
+      ReservationService reservationService,
+      MetricService metricService) {
         this.userService = userService;
         this.academicSpaceService = academicSpaceService;
         this.reservationService = reservationService;
-
+    this.metricService = metricService;
     }
 
     @PostMapping("/users")
@@ -110,5 +114,18 @@ public class AdminController {
 
     }
 
+  @GetMapping("/metrics/count")
+  public ResponseEntity<?> getMetrics() {
+    return ResponseEntity.ok().body(this.metricService.getCounts());
+  }
 
+  @GetMapping("/metrics/reservations-by-day-of-week")
+  public ResponseEntity<?> countReservationsByDayOfWeek() {
+    return ResponseEntity.ok().body(this.metricService.countReservationsByDayOfWeek());
+  }
+
+  @GetMapping("/metrics/reservations-by-academic-space-last-7-days")
+  public ResponseEntity<?> countReservationsByAcademicSpaceLast7Days() {
+    return ResponseEntity.ok().body(this.metricService.countReservationsByAcademicSpaceLast7Days());
+  }
 }

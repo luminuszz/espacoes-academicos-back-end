@@ -1,12 +1,25 @@
 package com.ea.backend.domain.space.application.repository;
 
 import com.ea.backend.domain.space.enterprise.AcademicSpace;
-import org.springframework.data.jpa.repository.JpaRepository;
-
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 public interface AcademicSpaceRepository  extends JpaRepository<AcademicSpace, UUID> {
     Optional<AcademicSpace> findAcademicSpaceByAcronym(String acronym);
     Optional<AcademicSpace> findAcademicSpaceById(UUID id);
+
+  @Query(
+      value =
+          "SELECT s.id AS academicSpaceId, s.acronym AS acronym, s.room_name AS roomName, COUNT(r.id) AS count "
+              + "FROM public.spaces s "
+              + "LEFT JOIN reservations r ON s.id = r.academic_space_id AND r.start_date_time >= NOW() - INTERVAL '7 days' "
+              + "GROUP BY s.id, s.acronym, s.room_name "
+              + "ORDER BY count DESC "
+              + "LIMIT 10",
+      nativeQuery = true)
+  List<Map<String, Object>> countReservationsByAcademicSpaceLast7Days();
 }

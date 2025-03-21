@@ -1,5 +1,7 @@
 package com.ea.backend.infra.security;
 
+import jakarta.servlet.http.HttpServletResponse;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,17 +14,18 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.List;
-
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -31,7 +34,6 @@ public class SecurityConfig {
     @Autowired
     private JwtSecurityFilter authFilter;
 
-
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         var configuration = new CorsConfiguration();
@@ -39,32 +41,57 @@ public class SecurityConfig {
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
 
-
         var source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
-
         return source;
-
     }
 
+  @Bean
+  public AccessDeniedHandler customAccessDeniedHandler() {
+    return (request, response, accessDeniedException) -> {
+      response.setStatus(HttpServletResponse.SC_FORBIDDEN); // 403
+      response.setContentType("application/json");
+      response
+          .getWriter()
+          .write("{\"error\": \"Forbidden - You do not have access to this resource\"}");
+    };
+  }
 
-    @Autowired
-    private HttpAccessDeniedHandler authenticationEntryPoint;
-
+  @Bean
+  public AuthenticationEntryPoint customAuthenticationEntryPoint() {
+    return (request, response, authException) -> {
+      System.out.println("Custom AuthenticationEntryPoint triggered");
+      response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401
+      response.setContentType("application/json");
+      response.getWriter().write("{\"error\": \"Unauthorized - Authentication is required\"}");
+    };
+  }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf(AbstractHttpConfigurer::disable)
-                .cors(cors -> cors.configurationSource(this.corsConfigurationSource()))
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/reservations/**").hasRole("TEACHER")
-                        .anyRequest().authenticated())
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
-                .exceptionHandling(ex -> ex.accessDeniedHandler(authenticationEntryPoint));
+    http.csrf(AbstractHttpConfigurer::disable)
+        .cors(cors -> cors.configurationSource(this.corsConfigurationSource()))
+        .authorizeHttpRequests(
+            auth ->
+                auth.requestMatchers("/auth/**")
+                    .permitAll()
+                    .requestMatchers("/admin/**")
+                    .hasRole("ADMIN")
+                    .requestMatchers("/reservations/**")
+                    .hasRole("TEACHER")
+                    .anyRequest()
+                    .authenticated())
+        .sessionManagement(
+            session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .exceptionHandling(
+            ex ->
+                ex.accessDeniedHandler(customAccessDeniedHandler()) // Handle 403
+                    .authenticationEntryPoint(customAuthenticationEntryPoint()) // Handle 401
+            )
+        .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
+        .formLogin(AbstractHttpConfigurer::disable) // Disable form login
+        .logout(AbstractHttpConfigurer::disable) // Disable logout redirection
+        .httpBasic(AbstractHttpConfigurer::disable); // Disable basic auth
 
         return http.build();
     }
