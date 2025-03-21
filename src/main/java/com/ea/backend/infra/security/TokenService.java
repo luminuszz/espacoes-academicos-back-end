@@ -2,8 +2,6 @@ package com.ea.backend.infra.security;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.exceptions.JWTCreationException;
-import com.auth0.jwt.exceptions.JWTVerificationException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -23,30 +21,22 @@ public class TokenService {
 
     public String generateToken(Authentication authentication) {
 
-      try {
+        var authenticatedDetails = (UserAuthenticated) authentication.getPrincipal();
+        var user = authenticatedDetails.getUser();
 
-          var authenticatedDetails =  (UserAuthenticated) authentication.getPrincipal();
-          var user = authenticatedDetails.getUser();
-
-          Algorithm algorithm = Algorithm.HMAC256(secret);
+        Algorithm algorithm = Algorithm.HMAC256(secret);
 
 
-          return JWT.create().withIssuer(issuer)
-                  .withSubject(user.getEmail())
-                  .withExpiresAt(generateExpirationDate())
-                  .sign(algorithm);
-
-      }catch (JWTCreationException exception) {
-         throw new IllegalArgumentException("Error on createAdmin token " + exception.getLocalizedMessage());
-      }
+        return JWT.create().withIssuer(issuer)
+                .withSubject(user.getEmail())
+                .withExpiresAt(generateExpirationDate())
+                .sign(algorithm);
 
     }
 
     public String validateToken(String token) {
-
         Algorithm algorithm = Algorithm.HMAC256(secret);
 
-        try {
           var decoded =  JWT.require(algorithm)
                   .withIssuer(issuer)
                   .build()
@@ -54,14 +44,9 @@ public class TokenService {
 
           return decoded.getSubject();
 
-        } catch (JWTVerificationException e) {
-            throw new IllegalArgumentException("Invalid token + " + e.getMessage());
-        }
+
     }
 
-    private Instant getExpirationDate(String token) {
-        return JWT.decode(token).getExpiresAt().toInstant();
-    }
 
     private Instant generateExpirationDate() {
         return LocalDateTime.now().plusHours(3).toInstant(ZoneOffset.of("-03:00"));

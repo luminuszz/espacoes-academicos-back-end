@@ -26,7 +26,8 @@ public class JwtSecurityFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
         var token = extractTokeFromRequest(request);
-            if(token != null) {
+
+        if (token != null) {
                 var userEmail = tokenService.validateToken(token);
 
                 UserDetails existsUser = this.userDetailsService.loadUserByUsername(userEmail);

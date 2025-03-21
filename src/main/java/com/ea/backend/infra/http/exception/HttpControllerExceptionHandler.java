@@ -79,4 +79,19 @@ public class HttpControllerExceptionHandler {
 
     }
 
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ResponseEntity<Map<String, String>> handlerIllegalArguments(Exception ex) {
+
+        Map<String, String> errors = new HashMap<>();
+
+        errors.put("message", ex.getMessage());
+        errors.put("code", String.valueOf(ex.hashCode()));
+
+        return ResponseEntity.badRequest().body(errors);
+
+    }
+
+
 }
