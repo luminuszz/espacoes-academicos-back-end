@@ -2,6 +2,7 @@ package com.ea.backend.domain.user.application;
 
 import com.ea.backend.domain.reservation.application.repository.ReservationRepository;
 import com.ea.backend.domain.space.application.repository.AcademicSpaceRepository;
+import com.ea.backend.domain.user.application.repository.UserRepository;
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;

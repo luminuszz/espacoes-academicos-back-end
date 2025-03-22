@@ -6,16 +6,15 @@ import com.ea.backend.domain.reservation.enterprise.entity.Reservation;
 import com.ea.backend.domain.reservation.enterprise.entity.ReservationStatus;
 import com.ea.backend.domain.reservation.enterprise.events.ReservationCanceledEvent;
 import com.ea.backend.domain.space.application.repository.AcademicSpaceRepository;
-import com.ea.backend.domain.user.application.UserRepository;
+import com.ea.backend.domain.user.application.repository.UserRepository;
 import com.ea.backend.shared.DomainException;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.stereotype.Service;
 
 @Service
 public class ReservationService {
