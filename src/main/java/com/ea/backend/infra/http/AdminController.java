@@ -63,7 +63,8 @@ public class AdminController {
     ) {
 
         try {
-            return PaginatedResponse.build(this.academicSpaceService.fetchSpacesPaginated(page, pageSize));
+      return PaginatedResponse.build(
+          this.academicSpaceService.fetchSpacesPaginated(page - 1, pageSize));
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
