@@ -1,22 +1,27 @@
 package com.ea.backend.shared;
 
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
-import java.time.LocalDateTime;
-import java.util.UUID;
-
-
-
+@MappedSuperclass
 public class DomainEntity {
-    @CreatedDate
-    @Column(nullable = false)
-    protected LocalDateTime createdDate;
+  @CreatedDate
+  @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+  protected LocalDateTime createdAt;
 
+  @LastModifiedDate
+  @Column(nullable = true, name = "updated_at")
+  protected LocalDateTime updatedAt;
 
-    @LastModifiedDate
-    @Column(nullable = false)
-    protected LocalDateTime updatedDate;
+  @PrePersist
+  protected void onCreate() {
+    createdAt = LocalDateTime.now();
+  }
 
+  @PreUpdate
+  protected void onUpdate() {
+    updatedAt = LocalDateTime.now();
+  }
 }

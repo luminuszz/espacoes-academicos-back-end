@@ -8,7 +8,6 @@ import com.ea.backend.domain.user.application.MetricService;
 import com.ea.backend.domain.user.application.UserService;
 import com.ea.backend.domain.user.application.dto.CreateUserDto;
 import com.ea.backend.infra.http.model.PaginatedResponse;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.util.UUID;
 import org.springframework.http.ResponseEntity;
@@ -34,8 +33,8 @@ public class AdminController {
     this.metricService = metricService;
     }
 
-    @PostMapping("/users")
-    public ResponseEntity<?> createAdminUser(@RequestBody @Valid CreateUserDto dto, HttpServletRequest request) {
+  @PostMapping("/users")
+  public ResponseEntity<?> createAdminUser(@RequestBody @Valid CreateUserDto dto) {
             try {
                 this.userService.createAdmin(dto);
 
@@ -45,15 +44,11 @@ public class AdminController {
             }
     }
 
-
-    @GetMapping("/teachers")
-    public ResponseEntity<?> fetchTeachersPaginated(
-            @Valid
-            @RequestParam("page") int page,
-            @RequestParam("pageSize") int pageSize
-    ) {
+  @GetMapping("/users")
+  public ResponseEntity<?> fetchTeachersPaginated(
+      @Valid @RequestParam("page") int page, @RequestParam("pageSize") int pageSize) {
         try {
-            return PaginatedResponse.build(this.userService.fetchTeachersPaginated(page, pageSize));
+      return PaginatedResponse.build(this.userService.fetchUsersPaginated(page - 1, pageSize));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

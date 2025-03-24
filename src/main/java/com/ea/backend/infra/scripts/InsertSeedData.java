@@ -1,6 +1,7 @@
 package com.ea.backend.infra.scripts;
 
 import com.ea.backend.domain.reservation.enterprise.entity.ReservationStatus;
+import com.github.javafaker.Faker;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -18,10 +19,11 @@ public class InsertSeedData {
   private static final String PASSWORD = "docker";
 
   public static void main(String[] args) {
+    Faker faker = new Faker();
     try (Connection conn = DriverManager.getConnection(JDBC_URL, USER, PASSWORD)) {
 
       conn.setAutoCommit(false);
-
+      
       // Insert 50 users
       String insertUserSQL =
           "INSERT INTO public.users (id, email, name, password_hash, role) VALUES (?, ?, ?, ?, ?)";
@@ -31,8 +33,8 @@ public class InsertSeedData {
           UUID userId = UUID.randomUUID();
           userIds.add(userId);
           stmt.setObject(1, userId);
-          stmt.setString(2, "user" + i + "@example.com");
-          stmt.setString(3, "User " + i);
+          stmt.setString(2, faker.internet().emailAddress());
+          stmt.setString(3, faker.name().fullName());
           stmt.setString(
               4, "$2a$10$Lyb9cg./3Ay0K6QeQsNjmOk0jJos5N..7uofd7NkPtJZ1Rkaf25gy"); // Fake password
           stmt.setString(
@@ -51,11 +53,12 @@ public class InsertSeedData {
           UUID spaceId = UUID.randomUUID();
           spaceIds.add(spaceId);
           stmt.setObject(1, spaceId);
-          stmt.setInt(2, (int) (Math.random() * 100) + 20); // Random capacity between 20 and 120
-          stmt.setString(3, "Description of space " + i);
+          stmt.setInt(
+              2, faker.number().numberBetween(20, 120)); // Random capacity between 20 and 120
+          stmt.setString(3, faker.lorem().sentence());
           stmt.setString(
-              4, "Room " + (char) (65 + (i % 26)) + i); // Room name based on letter and number
-          stmt.setString(5, Math.random() < 0.5 ? "AVAILABLE" : "UNAVAILABLE"); // Random status
+              4, "Room " + faker.letterify("??") + i); // Room name based on letters and number
+          stmt.setString(5, faker.bool().bool() ? "AVAILABLE" : "UNAVAILABLE"); // Random status
           stmt.setString(6, "ACRONYM-" + i); // Acronym
           stmt.addBatch();
         }

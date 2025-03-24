@@ -1,8 +1,8 @@
 package com.ea.backend.infra.http;
 
 import com.ea.backend.domain.user.application.UserService;
-import com.ea.backend.domain.user.application.dto.CreateUserDto;
 import com.ea.backend.domain.user.application.dto.MakeLoginDto;
+import com.ea.backend.domain.user.application.dto.RegisterTeacherDto;
 import com.ea.backend.infra.http.model.LoginResponseEntity;
 import com.ea.backend.infra.security.TokenService;
 import jakarta.validation.Valid;
@@ -29,9 +29,8 @@ public class AuthController {
         this.userService = userService;
     }
 
-
-    @PostMapping("/sign-in")
-    public ResponseEntity<String> login(@RequestBody @Valid MakeLoginDto dto) {
+  @PostMapping("/sign-in")
+  public ResponseEntity<?> login(@RequestBody @Valid MakeLoginDto dto) {
         try {
             var authentication = new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getPassword());
             var results = authenticationManager.authenticate(authentication);
@@ -43,10 +42,8 @@ public class AuthController {
         }
     }
 
-
-
-    @PostMapping("/sign-up")
-    public ResponseEntity<String> signUp(@RequestBody @Valid CreateUserDto dto) {
+  @PostMapping("/sign-up")
+  public ResponseEntity<String> signUp(@RequestBody @Valid RegisterTeacherDto dto) {
         this.userService.createTeacher(dto);
 
         return ResponseEntity.ok("User created");

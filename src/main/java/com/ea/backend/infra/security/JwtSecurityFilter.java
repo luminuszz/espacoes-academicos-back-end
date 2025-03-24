@@ -1,5 +1,6 @@
 package com.ea.backend.infra.security;
 
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,23 +26,28 @@ public class JwtSecurityFilter extends OncePerRequestFilter {
   protected void doFilterInternal(
       HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
       throws IOException, ServletException {
-
         var token = extractTokeFromRequest(request);
 
-    if (token != null) {
+    try {
+      if (token != null) {
 
-      var userEmail = tokenService.validateToken(token);
+        var userEmail = tokenService.validateToken(token);
 
-      UserDetails existsUser = this.userDetailsService.loadUserByUsername(userEmail);
+        UserDetails existsUser = this.userDetailsService.loadUserByUsername(userEmail);
 
-      request.setAttribute("user", existsUser);
+        request.setAttribute("user", existsUser);
 
-      System.out.println(existsUser.getAuthorities());
+        System.out.println(existsUser.getAuthorities());
 
-      var newAuthContext =
-          new UsernamePasswordAuthenticationToken(existsUser, null, existsUser.getAuthorities());
+        var newAuthContext =
+            new UsernamePasswordAuthenticationToken(existsUser, null, existsUser.getAuthorities());
 
-      SecurityContextHolder.getContext().setAuthentication(newAuthContext);
+        SecurityContextHolder.getContext().setAuthentication(newAuthContext);
+      }
+    } catch (JWTVerificationException e) {
+      SecurityContextHolder.clearContext();
+      response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token expired or invalid");
+      return;
     }
 
     filterChain.doFilter(request, response);
@@ -51,8 +57,7 @@ public class JwtSecurityFilter extends OncePerRequestFilter {
     extractTokeFromRequest(HttpServletRequest request) {
         String authorization = request.getHeader("Authorization");
 
-        if (authorization == null) return null;
-
+    if (authorization == null || authorization.isEmpty()) return null;
 
         return authorization.replace("Bearer ", "");
     }
