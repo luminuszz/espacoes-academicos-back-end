@@ -1,12 +1,10 @@
 package com.ea.backend.domain.user.enterprise.entity;
 
-import com.ea.backend.domain.reservation.enterprise.entity.Reservation;
 import com.ea.backend.shared.DomainEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.List;
 import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
@@ -42,6 +40,4 @@ public class User extends DomainEntity implements Serializable {
     @Column(nullable = false ,columnDefinition = "TEXT")
     private UserRole role;
 
-  @OneToMany(targetEntity = Reservation.class, mappedBy = "user", fetch = FetchType.LAZY)
-  private List<Reservation> reservations;
 }

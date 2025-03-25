@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -126,4 +128,7 @@ public class ReservationService {
         }
     }
 
+  public Page<Reservation> fetchReservationsPaginated(int page, int pageSize) {
+    return this.reservationRepository.findAllBy(PageRequest.of(page, pageSize));
+  }
 }

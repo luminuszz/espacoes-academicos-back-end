@@ -100,6 +100,13 @@ public class AdminController {
             }
     }
 
+  @GetMapping("/reservations")
+  public ResponseEntity<?> fetchReservationsPaged(
+      @Valid @RequestParam("page") int page, @RequestParam("pageSize") int pageSize) {
+
+    return PaginatedResponse.build(
+        this.reservationService.fetchReservationsPaginated(page - 1, pageSize));
+  }
 
     @PatchMapping("/reservations/{reservationId}/cancel")
     public ResponseEntity<?> cancelReservation(@PathVariable @Valid String reservationId) {
@@ -109,6 +116,7 @@ public class AdminController {
         return ResponseEntity.ok().body("Reservation cancelled successfully");
 
     }
+
 
   @GetMapping("/metrics/count")
   public ResponseEntity<?> getMetrics() {
@@ -124,4 +132,5 @@ public class AdminController {
   public ResponseEntity<?> countReservationsByAcademicSpaceLast7Days() {
     return ResponseEntity.ok().body(this.metricService.countReservationsByAcademicSpaceLast7Days());
   }
+
 }
