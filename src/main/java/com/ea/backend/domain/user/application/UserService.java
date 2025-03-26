@@ -3,11 +3,13 @@ package com.ea.backend.domain.user.application;
 
 import com.ea.backend.domain.user.application.dto.CreateUserDto;
 import com.ea.backend.domain.user.application.dto.RegisterTeacherDto;
+import com.ea.backend.domain.user.application.dto.UpdateUserDto;
 import com.ea.backend.domain.user.application.repository.UserProjection;
 import com.ea.backend.domain.user.application.repository.UserRepository;
 import com.ea.backend.domain.user.enterprise.entity.User;
 import com.ea.backend.domain.user.enterprise.entity.UserRole;
 import com.ea.backend.shared.DomainException;
+import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -69,8 +71,19 @@ public class UserService {
     }
 
   public Page<UserProjection> fetchUsersPaginated(int page, int pageSize) {
-    return this.userRepository.findAllBy(PageRequest.of(page, pageSize));
+    return this.userRepository.findAllByOrderByUpdatedAtAsc(PageRequest.of(page, pageSize));
     }
 
+  public void updateUser(String userId, UpdateUserDto dto) {
+    var user =
+        this.userRepository
+            .findUserById(UUID.fromString(userId))
+            .orElseThrow(() -> new DomainException("user not found"));
 
+    user.setEmail(!dto.email().isEmpty() ? dto.email() : user.getEmail());
+    user.setName(!dto.name().isEmpty() ? dto.name() : user.getName());
+    user.setRole(!dto.role().isEmpty() ? UserRole.valueOf(dto.role()) : user.getRole());
+
+    this.userRepository.save(user);
+  }
 }

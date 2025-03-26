@@ -59,7 +59,7 @@ public class JwtSecurityFilter extends OncePerRequestFilter {
 
     if (authorization == null || authorization.isEmpty()) return null;
 
-        return authorization.replace("Bearer ", "");
+    return authorization.replace("Bearer ", "");
     }
 
 }

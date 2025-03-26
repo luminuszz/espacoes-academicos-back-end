@@ -22,6 +22,7 @@ public class DomainEntity {
 
   @PreUpdate
   protected void onUpdate() {
+    System.out.println(" Updatee usr " + LocalDateTime.now());
     updatedAt = LocalDateTime.now();
   }
 }

@@ -7,6 +7,7 @@ import com.ea.backend.domain.space.application.service.AcademicSpaceService;
 import com.ea.backend.domain.user.application.MetricService;
 import com.ea.backend.domain.user.application.UserService;
 import com.ea.backend.domain.user.application.dto.CreateUserDto;
+import com.ea.backend.domain.user.application.dto.UpdateUserDto;
 import com.ea.backend.infra.http.model.PaginatedResponse;
 import jakarta.validation.Valid;
 import java.util.UUID;
@@ -54,6 +55,14 @@ public class AdminController {
         }
     }
 
+  @PutMapping("/users/{userId}")
+  public ResponseEntity<?> updateUser(
+      @Valid @RequestBody UpdateUserDto body, @PathVariable String userId) {
+
+    this.userService.updateUser(userId, body);
+
+    return ResponseEntity.ok().body("User updated successfully");
+  }
 
     @GetMapping("/spaces")
     public ResponseEntity<?> getSpacesPaginated(
@@ -132,5 +141,8 @@ public class AdminController {
   public ResponseEntity<?> countReservationsByAcademicSpaceLast7Days() {
     return ResponseEntity.ok().body(this.metricService.countReservationsByAcademicSpaceLast7Days());
   }
+
+
+  
 
 }
