@@ -11,22 +11,68 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Component;
 
-public class InsertSeedData {
+@Component
+public class InsertSeedData implements CommandLineRunner {
 
-  private static final String JDBC_URL = "jdbc:postgresql://localhost:5432/ea_db";
-  private static final String USER = "docker";
-  private static final String PASSWORD = "docker";
+  @Value("${spring.datasource.url}")
+  private String JDBC_URL;
 
-  public static void main(String[] args) {
+  @Value("${spring.datasource.username}")
+  private String USER;
+
+  @Value("${spring.datasource.password}")
+  private String PASSWORD;
+
+  @Value("${application.config.database.run_seed}")
+  private boolean RUN_SEED;
+
+  @Override
+  public void run(String... args) throws Exception {
+
+    System.out.println("Insert SeedData seed  " + RUN_SEED);
+    System.out.println("Insert SeedData seed  " + JDBC_URL);
+    System.out.println("Insert SeedData seed  " + USER);
+    System.out.println("Insert SeedData seed  " + PASSWORD);
+
+    if (!RUN_SEED) {
+      return;
+    }
+
     Faker faker = new Faker();
+    BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+
     try (Connection conn = DriverManager.getConnection(JDBC_URL, USER, PASSWORD)) {
 
       conn.setAutoCommit(false);
-      
+
       // Insert 50 users
       String insertUserSQL =
           "INSERT INTO public.users (id, email, name, password_hash, role) VALUES (?, ?, ?, ?, ?)";
+
+      // Create first admin user
+      try {
+
+        var stmt = conn.prepareStatement(insertUserSQL);
+
+        UUID userId = UUID.randomUUID();
+        stmt.setObject(1, userId);
+        stmt.setObject(1, userId);
+        stmt.setString(2, "admin@admin");
+        stmt.setString(3, faker.name().fullName());
+        stmt.setString(4, encoder.encode("admin")); // Fake password
+        stmt.setString(5, "ADMIN");
+
+        stmt.execute();
+
+      } catch (RuntimeException e) {
+        throw new RuntimeException(e);
+      }
+
       List<UUID> userIds = new ArrayList<>();
       try (PreparedStatement stmt = conn.prepareStatement(insertUserSQL)) {
         for (int i = 1; i <= 50; i++) {
@@ -35,8 +81,7 @@ public class InsertSeedData {
           stmt.setObject(1, userId);
           stmt.setString(2, faker.internet().emailAddress());
           stmt.setString(3, faker.name().fullName());
-          stmt.setString(
-              4, "$2a$10$Lyb9cg./3Ay0K6QeQsNjmOk0jJos5N..7uofd7NkPtJZ1Rkaf25gy"); // Fake password
+          stmt.setString(4, encoder.encode(faker.internet().password())); // Fake password
           stmt.setString(
               5, i % 2 == 0 ? "ADMIN" : "TEACHER"); // Alternating between ADMIN and TEACHER
           stmt.addBatch();

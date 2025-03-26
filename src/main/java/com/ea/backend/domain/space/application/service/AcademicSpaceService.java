@@ -5,12 +5,12 @@ import com.ea.backend.domain.space.application.repository.AcademicSpaceRepositor
 import com.ea.backend.domain.space.enterprise.AcademicSpace;
 import com.ea.backend.domain.space.enterprise.SpaceStatus;
 import com.ea.backend.shared.DomainException;
+import com.ea.backend.shared.DomainExceptionCode;
+import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-
-import java.util.UUID;
 
 @Service
 public class AcademicSpaceService {
@@ -23,9 +23,11 @@ public class AcademicSpaceService {
 
         var existsSpaceWithName = this.academicSpaceRepository.findAcademicSpaceByAcronym(dto.getAcronym());
 
-        if(existsSpaceWithName.isPresent()) {
-            throw new RuntimeException("Space with acronym name already exists");
-        }
+    existsSpaceWithName.ifPresent(
+        (spaceFound) -> {
+          throw new DomainException(
+              "Space with this acronym already exists", DomainExceptionCode.DUPLICATE_FOUND);
+        });
 
         space.setRoomName(dto.getName());
         space.setDescription(dto.getDescription());
@@ -48,7 +50,7 @@ public class AcademicSpaceService {
 
 
     public Page<AcademicSpace> fetchSpacesPaginated(int page, int pageSize) {
-        return academicSpaceRepository.findAll(PageRequest.of(page, pageSize));
+    return academicSpaceRepository.findAllByOrderByCreatedAtDesc(PageRequest.of(page, pageSize));
     }
 
 

@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -22,4 +24,6 @@ public interface AcademicSpaceRepository  extends JpaRepository<AcademicSpace, U
               + "LIMIT 10",
       nativeQuery = true)
   List<Map<String, Object>> countReservationsByAcademicSpaceLast7Days();
+
+  Page<AcademicSpace> findAllByOrderByCreatedAtDesc(PageRequest pageRequest);
 }

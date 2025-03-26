@@ -83,14 +83,10 @@ public class AdminController {
 
     @PostMapping("/spaces")
     public ResponseEntity<?> createSpace(@RequestBody @Valid CreateAcademicSpaceDto dto) {
-        try {
             this.academicSpaceService.createSpace(dto);
 
             return ResponseEntity.ok().body("Space created successfully");
-        } catch (RuntimeException e) {
-            System.out.println(e.getMessage());
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+
     }
 
 

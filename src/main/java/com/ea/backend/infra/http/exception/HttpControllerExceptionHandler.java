@@ -47,7 +47,7 @@ public class HttpControllerExceptionHandler {
         Map<String, String> errors = new HashMap<>();
 
         errors.put("message", ex.getMessage());
-        errors.put("code", String.valueOf(ex.hashCode()));
+    errors.put("code", String.valueOf(ex.getCode()));
 
         return ResponseEntity.badRequest().body(errors);
     }
