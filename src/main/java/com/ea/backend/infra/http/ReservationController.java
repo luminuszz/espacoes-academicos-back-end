@@ -6,14 +6,15 @@ import com.ea.backend.domain.reservation.application.services.ReservationService
 import com.ea.backend.infra.security.UserAuthenticated;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/reservations")
+@PreAuthorize("hasAnyRole('ROLE_TEACHER', 'ROLE_ADMIN')")
 public class ReservationController {
 
     @Autowired
@@ -36,7 +37,6 @@ public class ReservationController {
 
     @PostMapping
     public ResponseEntity<?> createReservation(@RequestBody @Valid CreateReservationDto dto, HttpServletRequest request) {
-
         try {
             var authenticatedUser = (UserAuthenticated) request.getAttribute("user");
 
@@ -47,7 +47,6 @@ public class ReservationController {
             return ResponseEntity.ok().body("Reservation created successfully");
 
         }catch (RuntimeException e) {
-
           return ResponseEntity.badRequest().body(e.getLocalizedMessage());
         }
     }
