@@ -1,5 +1,8 @@
 package com.ea.backend.shared;
 
+import lombok.Getter;
+
+@Getter
 public enum DomainExceptionCode {
   DOMAIN_ERROR("DOMAIN_ERROR"),
   SPACE_ALREADY_EXISTS("SPACE_ALREADY_EXISTS"),
@@ -12,7 +15,4 @@ public enum DomainExceptionCode {
     this.code = code;
   }
 
-  public String getCode() {
-    return code;
-  }
 }

@@ -10,7 +10,7 @@ public class PaginatedResponse {
     var map =
         Map.of(
             "page",
-            pageEntity.getNumber(),
+            pageEntity.getNumber() + 1,
             "pageSize",
             pageEntity.getSize(),
             "totalOfPages",

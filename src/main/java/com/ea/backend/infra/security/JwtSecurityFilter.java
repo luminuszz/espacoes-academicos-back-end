@@ -26,11 +26,15 @@ public class JwtSecurityFilter extends OncePerRequestFilter {
   protected void doFilterInternal(
       HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
       throws IOException, ServletException {
-        var token = extractTokeFromRequest(request);
+
+    var token = extractTokeFromRequest(request);
+
+    if (token == null || token.isEmpty() || request.getServletPath().startsWith("/auth")) {
+      filterChain.doFilter(request, response);
+      return;
+    }
 
     try {
-      if (token != null) {
-
         var userEmail = tokenService.validateToken(token);
 
         UserDetails existsUser = this.userDetailsService.loadUserByUsername(userEmail);
@@ -43,7 +47,7 @@ public class JwtSecurityFilter extends OncePerRequestFilter {
             new UsernamePasswordAuthenticationToken(existsUser, null, existsUser.getAuthorities());
 
         SecurityContextHolder.getContext().setAuthentication(newAuthContext);
-      }
+      
     } catch (JWTVerificationException e) {
       SecurityContextHolder.clearContext();
       response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token expired or invalid");

@@ -85,9 +85,8 @@ public class SecurityConfig {
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .exceptionHandling(
             ex ->
-                ex.accessDeniedHandler(customAccessDeniedHandler()) // Handle 403
-                    .authenticationEntryPoint(customAuthenticationEntryPoint()) // Handle 401
-            )
+                ex.accessDeniedHandler(customAccessDeniedHandler())
+                    .authenticationEntryPoint(customAuthenticationEntryPoint()))
         .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
         .formLogin(AbstractHttpConfigurer::disable) // Disable form login
         .logout(AbstractHttpConfigurer::disable) // Disable logout redirection
