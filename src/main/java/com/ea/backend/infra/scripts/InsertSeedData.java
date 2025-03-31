@@ -62,7 +62,7 @@ public class InsertSeedData implements CommandLineRunner {
         UUID userId = UUID.randomUUID();
         stmt.setObject(1, userId);
         stmt.setObject(1, userId);
-        stmt.setString(2, "admin@admin");
+        stmt.setString(2, "admin@admin.com");
         stmt.setString(3, faker.name().fullName());
         stmt.setString(4, encoder.encode("admin")); // Fake password
         stmt.setString(5, "ADMIN");
