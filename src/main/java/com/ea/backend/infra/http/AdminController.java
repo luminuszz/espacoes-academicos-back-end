@@ -66,16 +66,17 @@ public class AdminController {
     return ResponseEntity.ok().body("User updated successfully");
   }
 
-    @GetMapping("/spaces")
-    public ResponseEntity<?> getSpacesPaginated(
-            @Valid
-            @RequestParam("page") int page,
-            @RequestParam("pageSize") int pageSize
-    ) {
+  @GetMapping("/spaces")
+  public ResponseEntity<?> getSpacesPaginated(
+      @Valid @RequestParam("page") int page,
+      @RequestParam("pageSize") int pageSize,
+      @RequestParam("nmFilterColumn") String filterField,
+      @RequestParam("nmFilterValue") String filterValue) {
 
         try {
       return PaginatedResponse.build(
-          this.academicSpaceService.fetchSpacesPaginated(page - 1, pageSize));
+          this.academicSpaceService.fetchSpacesPaginated(
+              page - 1, pageSize, filterField, filterValue));
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());

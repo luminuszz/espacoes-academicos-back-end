@@ -48,10 +48,19 @@ public class AcademicSpaceService {
         this.academicSpaceRepository.save(space);
     }
 
+  public Page<AcademicSpace> fetchSpacesPaginated(
+      int page, int pageSize, String filterField, String filterValue) {
 
-    public Page<AcademicSpace> fetchSpacesPaginated(int page, int pageSize) {
-    return academicSpaceRepository.findAllByOrderByCreatedAtDesc(PageRequest.of(page, pageSize));
+    PageRequest pageRequest = PageRequest.of(page, pageSize);
+
+    if ("roomName".equalsIgnoreCase(filterField)) {
+      return academicSpaceRepository.findByRoomNameContainingIgnoreCaseOrderByCreatedAtDesc(
+          filterValue, pageRequest);
+    } else if ("acronym".equalsIgnoreCase(filterField)) {
+      return academicSpaceRepository.findByAcronymContainingIgnoreCaseOrderByCreatedAtDesc(
+          filterValue, pageRequest);
+    } else {
+      return academicSpaceRepository.findAllByOrderByCreatedAtDesc(pageRequest);
     }
-
-
+  }
 }

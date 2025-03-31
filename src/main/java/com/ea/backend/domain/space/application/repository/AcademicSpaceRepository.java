@@ -26,4 +26,10 @@ public interface AcademicSpaceRepository  extends JpaRepository<AcademicSpace, U
   List<Map<String, Object>> countReservationsByAcademicSpaceLast7Days();
 
   Page<AcademicSpace> findAllByOrderByCreatedAtDesc(PageRequest pageRequest);
+
+  Page<AcademicSpace> findByRoomNameContainingIgnoreCaseOrderByCreatedAtDesc(
+      String roomName, PageRequest pageRequest);
+
+  Page<AcademicSpace> findByAcronymContainingIgnoreCaseOrderByCreatedAtDesc(
+      String acronym, PageRequest pageRequest);
 }
