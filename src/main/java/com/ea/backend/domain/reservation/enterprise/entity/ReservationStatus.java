@@ -10,6 +10,8 @@ public enum ReservationStatus {
 
     ReservationStatus(String status) {
         this.role = status;
+
+
     }
 
 }

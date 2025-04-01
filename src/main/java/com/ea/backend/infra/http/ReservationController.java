@@ -3,9 +3,11 @@ package com.ea.backend.infra.http;
 
 import com.ea.backend.domain.reservation.application.dto.CreateReservationDto;
 import com.ea.backend.domain.reservation.application.services.ReservationService;
+import com.ea.backend.infra.http.model.PaginatedResponse;
 import com.ea.backend.infra.security.UserAuthenticated;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import java.util.Optional;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -51,5 +53,17 @@ public class ReservationController {
         }
     }
 
+  @GetMapping
+  public ResponseEntity<?> fetchUserReservationsPaginated(
+      HttpServletRequest req,
+      @Valid @RequestParam("page") int page,
+      @RequestParam("pageSize") int pageSize,
+      @RequestParam(value = "status", required = false) Optional<String> status) {
 
+    var authenticatedUser = (UserAuthenticated) req.getAttribute("user");
+
+    return PaginatedResponse.build(
+        this.reservationService.fetchReservationByUserIdAndStatusPaged(
+            authenticatedUser.getUser().getId(), status, page, pageSize));
+  }
 }

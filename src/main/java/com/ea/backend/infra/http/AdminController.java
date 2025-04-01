@@ -70,8 +70,8 @@ public class AdminController {
   public ResponseEntity<?> getSpacesPaginated(
       @Valid @RequestParam("page") int page,
       @RequestParam("pageSize") int pageSize,
-      @RequestParam("nmFilterColumn") String filterField,
-      @RequestParam("nmFilterValue") String filterValue) {
+      @RequestParam(value = "nmFilterColumn", required = false) String filterField,
+      @RequestParam(value = "nmFilterValue", required = false) String filterValue) {
 
         try {
       return PaginatedResponse.build(

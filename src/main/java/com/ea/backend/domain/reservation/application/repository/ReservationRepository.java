@@ -50,4 +50,9 @@ public interface ReservationRepository extends JpaRepository<Reservation, UUID> 
 
   @EntityGraph(attributePaths = {"user", "academicSpace"})
   Page<Reservation> findAllBy(PageRequest pageRequest);
+
+  Page<Reservation> findAllByUserIdAndStatus(
+      UUID userId, ReservationStatus status, PageRequest pageRequest);
+
+  Page<Reservation> findAllByUserId(UUID userId, PageRequest pageRequest);
 }

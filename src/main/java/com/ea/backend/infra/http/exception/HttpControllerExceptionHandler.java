@@ -58,7 +58,7 @@ public class HttpControllerExceptionHandler {
     public ResponseEntity<Map<String, String>> handlerMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex) {
 
         Map<String, String> errors = new HashMap<>();
-
+        
         errors.put("message", ex.getMessage());
         errors.put("code", String.valueOf(ex.hashCode()));
 
@@ -87,6 +87,7 @@ public class HttpControllerExceptionHandler {
         Map<String, String> errors = new HashMap<>();
 
     errors.put("message", ex.getMessage());
+    errors.put("path", ex.getCause().getMessage());
     errors.put("code", String.valueOf(ex.hashCode()));
 
     return ResponseEntity.badRequest().body(errors);

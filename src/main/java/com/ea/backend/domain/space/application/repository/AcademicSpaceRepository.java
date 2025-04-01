@@ -1,6 +1,7 @@
 package com.ea.backend.domain.space.application.repository;
 
 import com.ea.backend.domain.space.enterprise.AcademicSpace;
+import com.ea.backend.domain.space.enterprise.SpaceStatus;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -32,4 +33,6 @@ public interface AcademicSpaceRepository  extends JpaRepository<AcademicSpace, U
 
   Page<AcademicSpace> findByAcronymContainingIgnoreCaseOrderByCreatedAtDesc(
       String acronym, PageRequest pageRequest);
+
+  List<AcademicSpace> findAllByStatus(SpaceStatus status);
 }

@@ -29,7 +29,7 @@ public class JwtSecurityFilter extends OncePerRequestFilter {
 
     var token = extractTokeFromRequest(request);
 
-    if (token == null || token.isEmpty()) {
+    if (token == null || token.isEmpty() || request.getServletPath().startsWith("/auth")) {
       filterChain.doFilter(request, response);
       return;
     }

@@ -11,6 +11,7 @@ import com.ea.backend.shared.DomainException;
 import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
@@ -130,5 +131,15 @@ public class ReservationService {
 
   public Page<Reservation> fetchReservationsPaginated(int page, int pageSize) {
     return this.reservationRepository.findAllBy(PageRequest.of(page, pageSize));
+  }
+
+  public Page<Reservation> fetchReservationByUserIdAndStatusPaged(
+      UUID userId, Optional<String> status, int page, int pageSize) {
+
+    if (status.isPresent()) {
+      return this.reservationRepository.findAllByUserIdAndStatus(
+          userId, ReservationStatus.valueOf(status.get()), PageRequest.of(page, pageSize));
+    }
+    return this.reservationRepository.findAllByUserId(userId, PageRequest.of(page, pageSize));
   }
 }
