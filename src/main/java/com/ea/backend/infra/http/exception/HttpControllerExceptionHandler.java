@@ -3,8 +3,6 @@ package com.ea.backend.infra.http.exception;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.ea.backend.shared.DomainException;
-import java.util.HashMap;
-import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -12,6 +10,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestControllerAdvice
 public class HttpControllerExceptionHandler {
@@ -47,7 +48,8 @@ public class HttpControllerExceptionHandler {
         Map<String, String> errors = new HashMap<>();
 
         errors.put("message", ex.getMessage());
-    errors.put("code", String.valueOf(ex.getCode()));
+        errors.put("code", String.valueOf(ex.getCode()));
+
 
         return ResponseEntity.badRequest().body(errors);
     }

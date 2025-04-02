@@ -7,12 +7,13 @@ import com.ea.backend.infra.http.model.PaginatedResponse;
 import com.ea.backend.infra.security.UserAuthenticated;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import java.util.Optional;
-import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/reservations")
@@ -39,18 +40,13 @@ public class ReservationController {
 
     @PostMapping
     public ResponseEntity<?> createReservation(@RequestBody @Valid CreateReservationDto dto, HttpServletRequest request) {
-        try {
-            var authenticatedUser = (UserAuthenticated) request.getAttribute("user");
+        var authenticatedUser = (UserAuthenticated) request.getAttribute("user");
 
-            dto.setUserId(authenticatedUser.getUser().getId().toString());
+        dto.setUserId(authenticatedUser.getUser().getId().toString());
 
-            this.reservationService.createReservation(dto);
+        this.reservationService.createReservation(dto);
 
-            return ResponseEntity.ok().body("Reservation created successfully");
-
-        }catch (RuntimeException e) {
-          return ResponseEntity.badRequest().body(e.getLocalizedMessage());
-        }
+        return ResponseEntity.ok().body("Reservation created successfully");
     }
 
   @GetMapping
@@ -64,6 +60,6 @@ public class ReservationController {
 
     return PaginatedResponse.build(
         this.reservationService.fetchReservationByUserIdAndStatusPaged(
-            authenticatedUser.getUser().getId(), status, page, pageSize));
+                authenticatedUser.getUser().getId(), status, page - 1, pageSize));
   }
 }

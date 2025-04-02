@@ -9,15 +9,18 @@ import com.ea.backend.domain.space.application.repository.AcademicSpaceRepositor
 import com.ea.backend.domain.user.application.repository.UserRepository;
 import com.ea.backend.shared.DomainException;
 import jakarta.transaction.Transactional;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class ReservationService {
@@ -35,9 +38,12 @@ public class ReservationService {
     @Autowired
     private ApplicationEventPublisher applicationEventPublisher;
 
+    private static final Logger logger = LoggerFactory.getLogger(ReservationService.class);
+
 
     @Transactional
     public void createReservation(CreateReservationDto dto) {
+
 
         var user = this.userRepository.findUserById(UUID.fromString(dto.getUserId()))
                 .orElseThrow(() -> new DomainException("User not found"));
@@ -64,11 +70,19 @@ public class ReservationService {
         reservation.setEndDateTime(dto.getEndDateTime());
         reservation.setStatus(ReservationStatus.PENDING);
 
-        var reservationIntervalIsValid = reservation.getStartDateTime().isAfter(reservation.getEndDateTime());
-        var reservationIntervalIsLessThanMinimum = reservation.getStartDateTime().isBefore(LocalDateTime.now().plusMinutes(30));
+        var reservationIntervalIsValid =
+                reservation.getEndDateTime().isAfter(reservation.getStartDateTime());
 
-        var isValidReservation = !reservationIntervalIsValid && !reservationIntervalIsLessThanMinimum;
+        // in minutes
+        int MINIMUM_RESERVATION_TIME = 30;
 
+        var reservationIntervalIsMoreOrEqualToMinimum =
+                reservation
+                        .getEndDateTime()
+                        .isAfter(reservation.getStartDateTime().plusMinutes(MINIMUM_RESERVATION_TIME));
+
+        var isValidReservation =
+                reservationIntervalIsValid && reservationIntervalIsMoreOrEqualToMinimum;
 
         if (!isValidReservation) {
             throw new DomainException("Invalid reservation interval");
@@ -136,10 +150,14 @@ public class ReservationService {
   public Page<Reservation> fetchReservationByUserIdAndStatusPaged(
       UUID userId, Optional<String> status, int page, int pageSize) {
 
-    if (status.isPresent()) {
+
+      logger.info(status.toString());
+
+      if (status.isPresent()) {
       return this.reservationRepository.findAllByUserIdAndStatus(
           userId, ReservationStatus.valueOf(status.get()), PageRequest.of(page, pageSize));
     }
-    return this.reservationRepository.findAllByUserId(userId, PageRequest.of(page, pageSize));
+
+      return this.reservationRepository.findAllByUserId(userId, PageRequest.of(page, pageSize));
   }
 }
