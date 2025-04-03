@@ -31,15 +31,11 @@ public class AuthController {
 
   @PostMapping("/sign-in")
   public ResponseEntity<?> login(@RequestBody @Valid MakeLoginDto dto) {
-        try {
-            var authentication = new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getPassword());
-            var results = authenticationManager.authenticate(authentication);
-            var token = tokenService.generateToken(results);
+      var authentication = new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getPassword());
+      var results = authenticationManager.authenticate(authentication);
+      var token = tokenService.generateToken(results);
 
-            return LoginResponseEntity.build(token);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+      return LoginResponseEntity.build(token);
     }
 
   @PostMapping("/sign-up")
