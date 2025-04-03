@@ -79,20 +79,18 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http.csrf(AbstractHttpConfigurer::disable)
             .cors(cors -> cors.configurationSource(this.corsConfigurationSource()))
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .authorizeHttpRequests(auth ->
-                    auth.requestMatchers(HttpMethod.POST, "/auth/sign-in").permitAll()
-                            .requestMatchers(HttpMethod.POST, "/auth/sign-up").permitAll()
-                            .anyRequest().authenticated()
-            )
+            .sessionManagement(session ->
+                    session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(auth -> auth
+                    .requestMatchers(HttpMethod.POST, "/auth/sign-in").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/auth/sign-up").permitAll()
+                    .anyRequest().authenticated()
+            ).addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
             .exceptionHandling(
             ex ->
                 ex.accessDeniedHandler(customAccessDeniedHandler())
-                    .authenticationEntryPoint(customAuthenticationEntryPoint()))
-        .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
-        .formLogin(AbstractHttpConfigurer::disable) // Disable form login
-        .logout(AbstractHttpConfigurer::disable) // Disable logout redirection
-        .httpBasic(AbstractHttpConfigurer::disable); // Disable basic auth
+                        .authenticationEntryPoint(customAuthenticationEntryPoint()));
+
 
         return http.build();
     }
