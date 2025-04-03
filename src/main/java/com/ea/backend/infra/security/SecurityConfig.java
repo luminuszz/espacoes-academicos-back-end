@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -77,13 +78,14 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http.csrf(AbstractHttpConfigurer::disable)
-            .authorizeHttpRequests(auth -> {
-                auth.requestMatchers("/auth/**").permitAll();
-                auth.anyRequest().authenticated();
-            })
-            .cors(cors -> cors.configurationSource(this.corsConfigurationSource())).sessionManagement(
-            session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        .exceptionHandling(
+            .cors(cors -> cors.configurationSource(this.corsConfigurationSource()))
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(auth ->
+                    auth.requestMatchers(HttpMethod.POST, "/auth/sign-in").permitAll()
+                            .requestMatchers(HttpMethod.POST, "/auth/sign-up").permitAll()
+                            .anyRequest().authenticated()
+            )
+            .exceptionHandling(
             ex ->
                 ex.accessDeniedHandler(customAccessDeniedHandler())
                     .authenticationEntryPoint(customAuthenticationEntryPoint()))
