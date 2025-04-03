@@ -7,6 +7,7 @@ import com.ea.backend.infra.http.model.LoginResponseEntity;
 import com.ea.backend.infra.security.TokenService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/auth")
+@PreAuthorize("permitAll()")
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;

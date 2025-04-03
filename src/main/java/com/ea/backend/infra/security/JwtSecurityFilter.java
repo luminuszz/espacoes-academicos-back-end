@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Optional;
 
 @Component
 public class JwtSecurityFilter extends OncePerRequestFilter {
@@ -26,7 +27,6 @@ public class JwtSecurityFilter extends OncePerRequestFilter {
   protected void doFilterInternal(
       HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
       throws IOException, ServletException {
-
 
       var token = this.recoverToken(request);
 
@@ -51,8 +51,17 @@ public class JwtSecurityFilter extends OncePerRequestFilter {
 
     private String recoverToken(HttpServletRequest request) {
         var authHeader = request.getHeader("Authorization");
+
         if (authHeader == null) return null;
-        return authHeader.replace("Bearer ", "");
+
+        var authToken = authHeader
+                .replace("Bearer ", "")
+                .replace("undefined", "")
+                .replace("null", "");
+
+        return Optional.of(authToken)
+                .filter(token -> !token.isBlank())
+                .orElse(null);
     }
 
 }

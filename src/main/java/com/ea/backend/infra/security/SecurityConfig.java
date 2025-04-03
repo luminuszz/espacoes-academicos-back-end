@@ -91,7 +91,6 @@ public class SecurityConfig {
                 ex.accessDeniedHandler(customAccessDeniedHandler())
                         .authenticationEntryPoint(customAuthenticationEntryPoint()));
 
-
         return http.build();
     }
 
