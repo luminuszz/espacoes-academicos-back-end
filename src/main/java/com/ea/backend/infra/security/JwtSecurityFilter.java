@@ -5,7 +5,6 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -13,6 +12,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+
+import java.io.IOException;
 
 @Component
 public class JwtSecurityFilter extends OncePerRequestFilter {
@@ -29,10 +30,10 @@ public class JwtSecurityFilter extends OncePerRequestFilter {
 
     var token = extractTokeFromRequest(request);
 
-    if (token == null || token.isEmpty() || request.getServletPath().startsWith("/auth")) {
-      filterChain.doFilter(request, response);
-      return;
-    }
+      if (token == null || token.isEmpty()) {
+          filterChain.doFilter(request, response);
+          return;
+      }
 
     try {
         var userEmail = tokenService.validateToken(token);
@@ -41,7 +42,6 @@ public class JwtSecurityFilter extends OncePerRequestFilter {
 
         request.setAttribute("user", existsUser);
 
-        System.out.println(existsUser.getAuthorities());
 
         var newAuthContext =
             new UsernamePasswordAuthenticationToken(existsUser, null, existsUser.getAuthorities());
