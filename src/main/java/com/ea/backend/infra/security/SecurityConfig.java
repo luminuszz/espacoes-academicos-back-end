@@ -1,6 +1,8 @@
 package com.ea.backend.infra.security;
 
 import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -37,6 +39,8 @@ public class SecurityConfig {
     @Autowired
     private JwtSecurityFilter authFilter;
 
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         var configuration = new CorsConfiguration();
@@ -63,8 +67,8 @@ public class SecurityConfig {
   @Bean
   public AuthenticationEntryPoint customAuthenticationEntryPoint() {
     return (request, response, authException) -> {
-      System.out.println("Custom AuthenticationEntryPoint triggered");
-      response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401
+        this.logger.info(authException.getMessage());
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401
       response.setContentType("application/json");
       response.getWriter().write("{\"error\": \"Unauthorized - Authentication is required\"}");
     };
