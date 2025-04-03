@@ -1,6 +1,5 @@
 package com.ea.backend.infra.security;
 
-import com.auth0.jwt.exceptions.JWTVerificationException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,42 +27,32 @@ public class JwtSecurityFilter extends OncePerRequestFilter {
       HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
       throws IOException, ServletException {
 
-    var token = extractTokeFromRequest(request);
 
-      if (token == null || token.isEmpty()) {
-          filterChain.doFilter(request, response);
-          return;
+      var token = this.recoverToken(request);
+
+      if (token != null) {
+          var userEmail = tokenService.validateToken(token);
+          UserDetails existsUser = this.userDetailsService.loadUserByUsername(userEmail);
+
+          request.setAttribute("user", existsUser);
+
+          var newAuthContext = new UsernamePasswordAuthenticationToken(
+                  existsUser,
+                  null,
+                  existsUser.getAuthorities()
+          );
+
+          SecurityContextHolder.getContext().setAuthentication(newAuthContext);
       }
 
-    try {
-        var userEmail = tokenService.validateToken(token);
 
-        UserDetails existsUser = this.userDetailsService.loadUserByUsername(userEmail);
-
-        request.setAttribute("user", existsUser);
-
-
-        var newAuthContext =
-            new UsernamePasswordAuthenticationToken(existsUser, null, existsUser.getAuthorities());
-
-        SecurityContextHolder.getContext().setAuthentication(newAuthContext);
-      
-    } catch (JWTVerificationException e) {
-      SecurityContextHolder.clearContext();
-      response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token expired or invalid");
-      return;
+      filterChain.doFilter(request, response);
     }
 
-    filterChain.doFilter(request, response);
-    }
-
-    private String
-    extractTokeFromRequest(HttpServletRequest request) {
-        String authorization = request.getHeader("Authorization");
-
-    if (authorization == null || authorization.isEmpty()) return null;
-
-    return authorization.replace("Bearer ", "");
+    private String recoverToken(HttpServletRequest request) {
+        var authHeader = request.getHeader("Authorization");
+        if (authHeader == null) return null;
+        return authHeader.replace("Bearer ", "");
     }
 
 }
