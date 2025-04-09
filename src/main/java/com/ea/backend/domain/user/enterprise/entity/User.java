@@ -1,22 +1,15 @@
 package com.ea.backend.domain.user.enterprise.entity;
 
+import com.ea.backend.domain.school.enterprise.entity.SchoolUnit;
+import com.ea.backend.shared.DomainEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.UUID;
-
-import com.ea.backend.shared.DomainEntity;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.Getter;
-import lombok.Setter;
 
 @Entity(name = "users")
 @Table(name = "users")
@@ -44,15 +37,13 @@ public class User extends DomainEntity implements Serializable {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String passwordHash;
 
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false ,columnDefinition = "TEXT")
     private UserRole role;
 
-    @Column(nullable = false)
-    private String telefone;
 
-    @Column(nullable = false)
-    private String escola;
+    @ManyToOne
+    @JoinColumn(name = "school_id", nullable = true)
+    private SchoolUnit schoolUnit;
 
 }

@@ -1,13 +1,6 @@
 package com.ea.backend.domain.user.application;
 
 
-import java.util.UUID;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-
 import com.ea.backend.domain.user.application.dto.CreateUserDto;
 import com.ea.backend.domain.user.application.dto.RegisterTeacherDto;
 import com.ea.backend.domain.user.application.dto.UpdateUserDto;
@@ -16,6 +9,12 @@ import com.ea.backend.domain.user.application.repository.UserRepository;
 import com.ea.backend.domain.user.enterprise.entity.User;
 import com.ea.backend.domain.user.enterprise.entity.UserRole;
 import com.ea.backend.shared.DomainException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import java.util.UUID;
 
 @Service
 public class UserService {
@@ -60,10 +59,8 @@ public class UserService {
     user.setName(createUserDto.name());
     user.setPasswordHash(this.hashService.encode(createUserDto.password()));
     user.setRole(UserRole.TEACHER);
-    user.setTelefone(createUserDto.telefone());
-    user.setEscola(createUserDto.escola());
 
-    this.userRepository.save(user);
+      this.userRepository.save(user);
 
 
     }
