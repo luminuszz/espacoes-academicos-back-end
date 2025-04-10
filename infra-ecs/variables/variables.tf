@@ -15,7 +15,7 @@ variable "container_name" {
 }
 
 variable "image_url" {
-  description = "URL da imagem no ECR (ex: 123456789012.dkr.ecr.us-east-1.amazonaws.com/seu-repo:tag)"
+  description = "864981729683.dkr.ecr.us-east-1.amazonaws.com/espaco-academico:latest"
   type        = string
 }
 
