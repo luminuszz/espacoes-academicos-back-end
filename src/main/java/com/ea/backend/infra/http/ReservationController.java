@@ -3,8 +3,10 @@ package com.ea.backend.infra.http;
 
 import com.ea.backend.domain.reservation.application.dto.CreateReservationDto;
 import com.ea.backend.domain.reservation.application.services.ReservationService;
-import com.ea.backend.infra.http.model.PaginatedResponse;
+import com.ea.backend.domain.reservation.enterprise.entity.Reservation;
+import com.ea.backend.infra.http.model.PaginatedResponseBuilder;
 import com.ea.backend.infra.security.UserAuthenticated;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/reservations")
 @PreAuthorize("hasAnyRole('ROLE_TEACHER', 'ROLE_ADMIN')")
+@Tag(name = "Reservations", description = "Controller for create and update reservations")
 public class ReservationController {
 
     @Autowired
@@ -50,7 +53,7 @@ public class ReservationController {
     }
 
   @GetMapping
-  public ResponseEntity<?> fetchUserReservationsPaginated(
+  public ResponseEntity<PaginatedResponseBuilder<Reservation>> fetchUserReservationsPaginated(
       HttpServletRequest req,
       @Valid @RequestParam("page") int page,
       @RequestParam("pageSize") int pageSize,
@@ -58,8 +61,8 @@ public class ReservationController {
 
     var authenticatedUser = (UserAuthenticated) req.getAttribute("user");
 
-    return PaginatedResponse.build(
-        this.reservationService.fetchReservationByUserIdAndStatusPaged(
-                authenticatedUser.getUser().getId(), status, page - 1, pageSize));
+      return ResponseEntity.ok(new PaginatedResponseBuilder<>(
+              this.reservationService.fetchReservationByUserIdAndStatusPaged(
+                      authenticatedUser.getUser().getId(), status, page - 1, pageSize)));
   }
 }

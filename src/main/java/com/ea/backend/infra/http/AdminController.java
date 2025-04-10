@@ -1,14 +1,20 @@
 package com.ea.backend.infra.http;
 
 import com.ea.backend.domain.reservation.application.services.ReservationService;
+import com.ea.backend.domain.reservation.enterprise.entity.Reservation;
 import com.ea.backend.domain.space.application.dto.ChangeSpaceStatusDto;
 import com.ea.backend.domain.space.application.dto.CreateAcademicSpaceDto;
 import com.ea.backend.domain.space.application.service.AcademicSpaceService;
+import com.ea.backend.domain.space.enterprise.AcademicSpace;
 import com.ea.backend.domain.user.application.MetricService;
 import com.ea.backend.domain.user.application.UserService;
 import com.ea.backend.domain.user.application.dto.CreateUserDto;
 import com.ea.backend.domain.user.application.dto.UpdateUserDto;
-import com.ea.backend.infra.http.model.PaginatedResponse;
+import com.ea.backend.domain.user.application.repository.UserProjection;
+import com.ea.backend.infra.http.model.PaginatedResponseBuilder;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,6 +25,7 @@ import java.util.UUID;
 @RestController
 @PreAuthorize("hasRole('ROLE_ADMIN')")
 @RequestMapping("/admin")
+@Tag(name = "Admin", description = "Admin routes ")
 public class AdminController {
 
     private final UserService userService;
@@ -38,6 +45,7 @@ public class AdminController {
     }
 
   @PostMapping("/users")
+  @Operation
   public ResponseEntity<?> createUser(@RequestBody @Valid CreateUserDto dto) {
       this.userService.createUser(dto);
       return ResponseEntity.ok().body("User created successfully");
@@ -45,16 +53,17 @@ public class AdminController {
   }
 
   @GetMapping("/users")
-  public ResponseEntity<?> fetchTeachersPaginated(
+  @Operation
+  public ResponseEntity<PaginatedResponseBuilder<UserProjection>> fetchTeachersPaginated(
       @Valid @RequestParam("page") int page, @RequestParam("pageSize") int pageSize) {
-        try {
-      return PaginatedResponse.build(this.userService.fetchUsersPaginated(page - 1, pageSize));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
+
+      return ResponseEntity.ok(
+              new PaginatedResponseBuilder<>(this.userService.fetchUsersPaginated(page - 1, pageSize))
+      );
+  }
 
   @PutMapping("/users/{userId}")
+  @Operation
   public ResponseEntity<?> updateUser(
       @Valid @RequestBody UpdateUserDto body, @PathVariable String userId) {
 
@@ -64,24 +73,26 @@ public class AdminController {
   }
 
   @GetMapping("/spaces")
-  public ResponseEntity<?> getSpacesPaginated(
+  @Operation
+  @ApiResponse(responseCode = "200")
+  public ResponseEntity<PaginatedResponseBuilder<AcademicSpace>> getSpacesPaginated(
       @Valid @RequestParam("page") int page,
       @RequestParam("pageSize") int pageSize,
       @RequestParam(value = "nmFilterColumn", required = false) String filterField,
       @RequestParam(value = "nmFilterValue", required = false) String filterValue) {
 
-        try {
-      return PaginatedResponse.build(
-          this.academicSpaceService.fetchSpacesPaginated(
-              page - 1, pageSize, filterField, filterValue));
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
+
+      return ResponseEntity.ok(new PaginatedResponseBuilder<>(
+              this.academicSpaceService.fetchSpacesPaginated(
+                      page - 1, pageSize, filterField, filterValue))
+      );
+
+  }
 
 
     @PostMapping("/spaces")
+    @Operation
+    @ApiResponse(responseCode = "201")
     public ResponseEntity<?> createSpace(@RequestBody @Valid CreateAcademicSpaceDto dto) {
             this.academicSpaceService.createSpace(dto);
 
@@ -90,7 +101,8 @@ public class AdminController {
     }
 
 
-
+    @Operation
+    @ApiResponse(responseCode = "201")
     @PatchMapping("/spaces/{spaceId}/status")
     public ResponseEntity<?> changeSpaceStatus(@PathVariable String spaceId, @RequestBody @Valid ChangeSpaceStatusDto requestBody) {
 
@@ -106,11 +118,11 @@ public class AdminController {
     }
 
   @GetMapping("/reservations")
-  public ResponseEntity<?> fetchReservationsPaged(
+  public ResponseEntity<PaginatedResponseBuilder<Reservation>> fetchReservationsPaged(
       @Valid @RequestParam("page") int page, @RequestParam("pageSize") int pageSize) {
 
-    return PaginatedResponse.build(
-        this.reservationService.fetchReservationsPaginated(page - 1, pageSize));
+
+      return ResponseEntity.ok(new PaginatedResponseBuilder<>(this.reservationService.fetchReservationsPaginated(page - 1, pageSize)));
   }
 
     @PatchMapping("/reservations/{reservationId}/cancel")

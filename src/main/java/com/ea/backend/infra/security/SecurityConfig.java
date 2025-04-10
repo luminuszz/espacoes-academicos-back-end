@@ -1,5 +1,8 @@
 package com.ea.backend.infra.security;
 
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +33,17 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
+@SecurityScheme(
+        name = SecurityConfig.SECURITY,
+        type = SecuritySchemeType.HTTP,
+        bearerFormat = "JWT",
+        scheme = "Bearer"
+)
+@SecurityRequirement(name = SecurityConfig.SECURITY)
 public class SecurityConfig {
+
+
+    public static final String SECURITY = "bearerToken";
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -84,6 +97,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                     .requestMatchers(HttpMethod.POST, "/auth/sign-in").permitAll()
                     .requestMatchers(HttpMethod.POST, "/auth/sign-up").permitAll()
+                    .requestMatchers("v3/api-docs/**", "/swagger-ui/**", "swagger-ui.html", "swagger-config").permitAll()
                     .anyRequest().authenticated()
             ).addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
             .exceptionHandling(
