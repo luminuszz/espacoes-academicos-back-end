@@ -2,19 +2,16 @@ package com.ea.backend.infra.scripts;
 
 import com.ea.backend.domain.reservation.enterprise.entity.ReservationStatus;
 import com.github.javafaker.Faker;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.UUID;
 
 @Component
 public class InsertSeedData implements CommandLineRunner {
@@ -29,7 +26,7 @@ public class InsertSeedData implements CommandLineRunner {
   private String PASSWORD;
 
   @Value("${application.config.database.run_seed}")
-  private boolean RUN_SEED;
+  private String RUN_SEED;
 
   @Override
   public void run(String... args) throws Exception {
@@ -39,7 +36,7 @@ public class InsertSeedData implements CommandLineRunner {
     System.out.println("Insert SeedData seed  " + USER);
     System.out.println("Insert SeedData seed  " + PASSWORD);
 
-    if (!RUN_SEED) {
+    if (!Boolean.parseBoolean(RUN_SEED)) {
       return;
     }
 
@@ -149,6 +146,32 @@ public class InsertSeedData implements CommandLineRunner {
         }
         stmt.executeBatch();
       }
+
+        // Insert 50 school units
+        String insertSchoolUnitSQL =
+                "INSERT INTO public.unidade_escola (id, name, type, state, city, address, numero_contato, data_criacao) " +
+                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        try (PreparedStatement stmt = conn.prepareStatement(insertSchoolUnitSQL)) {
+            for (int i = 1; i <= 50; i++) {
+                UUID schoolUnitId = UUID.randomUUID();
+                stmt.setObject(1, schoolUnitId);
+                stmt.setString(2, faker.educator().university());
+                stmt.setString(3, faker.options().option("Public", "Private"));
+                stmt.setString(4, faker.address().state());
+                stmt.setString(5, faker.address().city());
+                stmt.setString(6, faker.address().streetAddress());
+
+                var contactNumber = faker.phoneNumber().phoneNumber();
+                if (contactNumber.length() > 15) {
+                    contactNumber = contactNumber.substring(0, 15);
+                }
+
+                stmt.setString(7, contactNumber);
+                stmt.setTimestamp(8, new Timestamp(System.currentTimeMillis())); // Current timestamp
+                stmt.addBatch();
+            }
+            stmt.executeBatch();
+        }
 
       // Commit the transaction
       conn.commit();

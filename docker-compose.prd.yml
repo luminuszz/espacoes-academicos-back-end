@@ -2,7 +2,6 @@ services:
   postgres:
     image: postgres:15
     container_name: postgres_db
-    restart: always
     environment:
       POSTGRES_DB: ea_db
       POSTGRES_USER: docker
@@ -30,6 +29,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/ea_db
       SPRING_DATASOURCE_USERNAME: docker
       SPRING_DATASOURCE_PASSWORD: docker
+      RUN_SEED: ${RUN_SEED}
 
 volumes:
   pgdata:

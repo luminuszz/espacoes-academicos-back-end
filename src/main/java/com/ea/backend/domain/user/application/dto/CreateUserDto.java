@@ -18,5 +18,9 @@ public class CreateUserDto {
     @Email
     private String email;
 
-  @NotBlank private String role;
+    @NotBlank
+    private String role;
+
+    private String schoolUnitId;
+
 }

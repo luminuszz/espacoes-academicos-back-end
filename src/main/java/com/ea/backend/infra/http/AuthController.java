@@ -1,10 +1,9 @@
 package com.ea.backend.infra.http;
 
-import com.ea.backend.domain.user.application.UserService;
 import com.ea.backend.domain.user.application.dto.MakeLoginDto;
-import com.ea.backend.domain.user.application.dto.RegisterTeacherDto;
 import com.ea.backend.infra.http.model.LoginResponseEntity;
 import com.ea.backend.infra.security.TokenService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -18,17 +17,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/auth")
 @PreAuthorize("permitAll()")
+@Tag(name = "Auth")
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
     private final TokenService tokenService;
-    private  final UserService userService;
 
-
-    public AuthController(AuthenticationManager authenticationManager, TokenService tokenService, UserService userService) {
+    public AuthController(AuthenticationManager authenticationManager, TokenService tokenService) {
         this.authenticationManager = authenticationManager;
         this.tokenService = tokenService;
-        this.userService = userService;
+
     }
 
   @PostMapping("/sign-in")
@@ -38,12 +36,5 @@ public class AuthController {
       var token = tokenService.generateToken(results);
 
       return LoginResponseEntity.build(token);
-    }
-
-  @PostMapping("/sign-up")
-  public ResponseEntity<String> signUp(@RequestBody @Valid RegisterTeacherDto dto) {
-        this.userService.createTeacher(dto);
-
-        return ResponseEntity.ok("User created");
     }
 }
