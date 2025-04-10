@@ -3,7 +3,9 @@ package com.ea.backend.domain.school.enterprise.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "unidade_escola")
@@ -12,8 +14,8 @@ import java.time.LocalDateTime;
 public class SchoolUnit {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @Column(nullable = false, length = 255)
     private String name;
@@ -40,4 +42,6 @@ public class SchoolUnit {
     public void prePersist() {
         this.createdAt = LocalDateTime.now();
     }
+
+
 }

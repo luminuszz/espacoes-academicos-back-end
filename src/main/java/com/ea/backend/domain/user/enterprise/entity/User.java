@@ -32,18 +32,20 @@ public class User extends DomainEntity implements Serializable {
     @Column(nullable = false, unique = true)
     private  String email;
 
-
     @JsonIgnore
     @Column(nullable = false, columnDefinition = "TEXT")
     private String passwordHash;
+
+    @Column(nullable = true, columnDefinition = "TEXT")
+    private String contactNumber;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false ,columnDefinition = "TEXT")
     private UserRole role;
 
-
     @ManyToOne
     @JoinColumn(name = "school_id", nullable = true)
     private SchoolUnit schoolUnit;
+
 
 }

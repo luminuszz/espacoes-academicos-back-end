@@ -20,4 +20,7 @@ public class CreateUserDto {
 
     @NotBlank
     private String role;
+
+    private String schoolUnitId;
+
 }

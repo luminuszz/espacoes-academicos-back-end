@@ -10,10 +10,11 @@ import com.ea.backend.domain.user.application.dto.CreateUserDto;
 import com.ea.backend.domain.user.application.dto.UpdateUserDto;
 import com.ea.backend.infra.http.model.PaginatedResponse;
 import jakarta.validation.Valid;
-import java.util.UUID;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @RestController
 @PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -37,15 +38,11 @@ public class AdminController {
     }
 
   @PostMapping("/users")
-  public ResponseEntity<?> createAdminUser(@RequestBody @Valid CreateUserDto dto) {
-            try {
-                this.userService.createAdmin(dto);
+  public ResponseEntity<?> createUser(@RequestBody @Valid CreateUserDto dto) {
+      this.userService.createUser(dto);
+      return ResponseEntity.ok().body("User created successfully");
 
-               return ResponseEntity.ok().body("User created successfully");
-            } catch (Exception e) {
-                return ResponseEntity.badRequest().body(e.getMessage());
-            }
-    }
+  }
 
   @GetMapping("/users")
   public ResponseEntity<?> fetchTeachersPaginated(
