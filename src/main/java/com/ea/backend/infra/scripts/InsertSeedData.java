@@ -26,7 +26,7 @@ public class InsertSeedData implements CommandLineRunner {
   private String PASSWORD;
 
   @Value("${application.config.database.run_seed}")
-  private boolean RUN_SEED;
+  private String RUN_SEED;
 
   @Override
   public void run(String... args) throws Exception {
@@ -36,7 +36,7 @@ public class InsertSeedData implements CommandLineRunner {
     System.out.println("Insert SeedData seed  " + USER);
     System.out.println("Insert SeedData seed  " + PASSWORD);
 
-    if (!RUN_SEED) {
+    if (!Boolean.parseBoolean(RUN_SEED)) {
       return;
     }
 
