@@ -1,0 +1,21 @@
+
+name: Report New Commits
+on:
+  push:
+    branches:
+    - main
+jobs:
+  my-job:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+      - uses: actions/checkout@v2
+      
+      - run: echo "Novos commits realizados no repositório!"
+
+      - name: Send notification to Slack
+        uses: slackapi/slack-github-action@v1.19.0
+        with:
+          payload: '{"text": "New commit pushed: <commit_url>"}'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}

@@ -7,7 +7,7 @@ resource "aws_ecs_cluster" "this" {
 }
 
 resource "aws_iam_role" "ecs_task_execution_role" {
-  name = "ecsTaskExecutionRole"
+  name = "espaco-academico"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
