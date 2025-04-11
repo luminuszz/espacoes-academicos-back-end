@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.apache.coyote.BadRequestException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -46,8 +47,16 @@ public class AdminController {
 
   @PostMapping("/users")
   @Operation
-  public ResponseEntity<?> createUser(@RequestBody @Valid CreateUserDto dto) {
-      this.userService.createUser(dto);
+  public ResponseEntity<?> createUser(@RequestBody @Valid CreateUserDto dto) throws BadRequestException {
+
+      switch (dto.toDomainRole()) {
+          case ADMIN -> this.userService.createAdminUser(dto);
+          case TEACHER -> this.userService.createTeacher(dto);
+          default -> {
+              throw new BadRequestException("Invalid user role");
+          }
+      }
+
       return ResponseEntity.ok().body("User created successfully");
 
   }

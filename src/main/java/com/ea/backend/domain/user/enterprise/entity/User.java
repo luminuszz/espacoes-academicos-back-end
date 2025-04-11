@@ -28,7 +28,6 @@ public class User extends DomainEntity implements Serializable {
     @Column(nullable = false)
     private String name;
 
-
     @Column(nullable = false, unique = true)
     private  String email;
 
@@ -39,6 +38,11 @@ public class User extends DomainEntity implements Serializable {
     @Column(nullable = true, columnDefinition = "TEXT")
     private String contactNumber;
 
+
+    @Column(nullable = true, columnDefinition = "TEXT")
+    private String course;
+
+    
     @Enumerated(EnumType.STRING)
     @Column(nullable = false ,columnDefinition = "TEXT")
     private UserRole role;

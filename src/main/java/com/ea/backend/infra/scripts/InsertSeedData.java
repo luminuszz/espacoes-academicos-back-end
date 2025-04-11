@@ -36,6 +36,8 @@ public class InsertSeedData implements CommandLineRunner {
     System.out.println("Insert SeedData seed  " + USER);
     System.out.println("Insert SeedData seed  " + PASSWORD);
 
+    var random = new Random();
+
     if (!Boolean.parseBoolean(RUN_SEED)) {
       return;
     }
@@ -47,9 +49,39 @@ public class InsertSeedData implements CommandLineRunner {
 
       conn.setAutoCommit(false);
 
+
+      // Insert 50 school units
+      String insertSchoolUnitSQL =
+              "INSERT INTO public.unidade_escola (id, name, type, state, city, address, numero_contato, data_criacao) " +
+                      "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+
+      List<UUID> schoolUnitIds = new ArrayList<>();
+      try (PreparedStatement stmt = conn.prepareStatement(insertSchoolUnitSQL)) {
+        for (int i = 1; i <= 50; i++) {
+          UUID schoolUnitId = UUID.randomUUID();
+          schoolUnitIds.add(schoolUnitId);
+          stmt.setObject(1, schoolUnitId);
+          stmt.setString(2, faker.educator().university());
+          stmt.setString(3, faker.options().option("Public", "Private"));
+          stmt.setString(4, faker.address().state());
+          stmt.setString(5, faker.address().city());
+          stmt.setString(6, faker.address().streetAddress());
+
+          var contactNumber = faker.phoneNumber().phoneNumber();
+          if (contactNumber.length() > 15) {
+            contactNumber = contactNumber.substring(0, 15);
+          }
+
+          stmt.setString(7, contactNumber);
+          stmt.setTimestamp(8, new Timestamp(System.currentTimeMillis())); // Current timestamp
+          stmt.addBatch();
+        }
+        stmt.executeBatch();
+      }
+
       // Insert 50 users
       String insertUserSQL =
-          "INSERT INTO public.users (id, email, name, password_hash, role) VALUES (?, ?, ?, ?, ?)";
+              "INSERT INTO public.users (id, email, name, password_hash, role, contact_number, course, school_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
       // Create first admin user
       try {
@@ -58,11 +90,14 @@ public class InsertSeedData implements CommandLineRunner {
 
         UUID userId = UUID.randomUUID();
         stmt.setObject(1, userId);
-        stmt.setObject(1, userId);
         stmt.setString(2, "admin@admin.com");
         stmt.setString(3, faker.name().fullName());
         stmt.setString(4, encoder.encode("admin")); // Fake password
         stmt.setString(5, "ADMIN");
+        stmt.setString(6, faker.phoneNumber().phoneNumber());
+        stmt.setString(7, null);
+        stmt.setObject(8, null);
+
 
         stmt.execute();
 
@@ -70,17 +105,32 @@ public class InsertSeedData implements CommandLineRunner {
         throw new RuntimeException(e);
       }
 
+
       List<UUID> userIds = new ArrayList<>();
       try (PreparedStatement stmt = conn.prepareStatement(insertUserSQL)) {
         for (int i = 1; i <= 50; i++) {
           UUID userId = UUID.randomUUID();
+          UUID schoolUnitId = schoolUnitIds.get(random.nextInt(schoolUnitIds.size()));
+          // Alternating between ADMIN and TEACHER
+          var role = i % 2 == 0 ? "ADMIN" : "TEACHER";
           userIds.add(userId);
+
           stmt.setObject(1, userId);
           stmt.setString(2, faker.internet().emailAddress());
           stmt.setString(3, faker.name().fullName());
           stmt.setString(4, encoder.encode(faker.internet().password())); // Fake password
-          stmt.setString(
-              5, i % 2 == 0 ? "ADMIN" : "TEACHER"); // Alternating between ADMIN and TEACHER
+          stmt.setString(5, role);
+          stmt.setString(6, faker.phoneNumber().phoneNumber());
+
+
+          if (role.equals("TEACHER")) {
+            stmt.setString(7, faker.educator().course()); // Course
+            stmt.setObject(8, schoolUnitId);
+          } else {
+            stmt.setString(7, null); // No course for ADMIN;
+            stmt.setObject(8, null); // No school unit for ADMIN
+          }
+
           stmt.addBatch();
         }
         stmt.executeBatch();
@@ -110,7 +160,6 @@ public class InsertSeedData implements CommandLineRunner {
       // Insert 50 reservations with random status and relationships
       String insertReservationSQL =
           "INSERT INTO public.reservations (id, end_date_time, start_date_time, academic_space_id, user_id, status) VALUES (?, ?, ?, ?, ?, ?)";
-      Random random = new Random();
       try (PreparedStatement stmt = conn.prepareStatement(insertReservationSQL)) {
         for (int i = 1; i <= 50; i++) {
           UUID reservationId = UUID.randomUUID();
@@ -147,31 +196,6 @@ public class InsertSeedData implements CommandLineRunner {
         stmt.executeBatch();
       }
 
-        // Insert 50 school units
-        String insertSchoolUnitSQL =
-                "INSERT INTO public.unidade_escola (id, name, type, state, city, address, numero_contato, data_criacao) " +
-                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-        try (PreparedStatement stmt = conn.prepareStatement(insertSchoolUnitSQL)) {
-            for (int i = 1; i <= 50; i++) {
-                UUID schoolUnitId = UUID.randomUUID();
-                stmt.setObject(1, schoolUnitId);
-                stmt.setString(2, faker.educator().university());
-                stmt.setString(3, faker.options().option("Public", "Private"));
-                stmt.setString(4, faker.address().state());
-                stmt.setString(5, faker.address().city());
-                stmt.setString(6, faker.address().streetAddress());
-
-                var contactNumber = faker.phoneNumber().phoneNumber();
-                if (contactNumber.length() > 15) {
-                    contactNumber = contactNumber.substring(0, 15);
-                }
-
-                stmt.setString(7, contactNumber);
-                stmt.setTimestamp(8, new Timestamp(System.currentTimeMillis())); // Current timestamp
-                stmt.addBatch();
-            }
-            stmt.executeBatch();
-        }
 
       // Commit the transaction
       conn.commit();

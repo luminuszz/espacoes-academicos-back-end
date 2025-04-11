@@ -31,7 +31,7 @@ public class UserService {
     }
 
 
-    public void createUser(CreateUserDto createUserDto) {
+    public void createAdminUser(CreateUserDto createUserDto) {
         User user = new User();
 
         var existUser = this.userRepository.findUserByEmail((createUserDto.getEmail()));
@@ -40,31 +40,50 @@ public class UserService {
             throw new DomainException("User already exists");
         }
 
+        user.setEmail(createUserDto.getEmail());
+        user.setName(createUserDto.getName());
+        user.setContactNumber(createUserDto.getContactNumber());
+        user.setPasswordHash(this.hashService.encode(createUserDto.getPassword()));
+        user.setRole(UserRole.ADMIN);
+
+        this.userRepository.save(user);
+    }
+
+
+    public void createTeacher(CreateUserDto createUserDto) {
+        User user = new User();
+
+        var existUser = this.userRepository.findUserByEmail((createUserDto.getEmail()));
+
+        if (existUser.isPresent()) {
+            throw new DomainException("User already exists");
+        }
+
 
         user.setEmail(createUserDto.getEmail());
         user.setName(createUserDto.getName());
         user.setPasswordHash(this.hashService.encode(createUserDto.getPassword()));
-        user.setRole(UserRole.valueOf(createUserDto.getRole()));
+        user.setRole(UserRole.TEACHER);
+        user.setCourse(createUserDto.getCourse());
+        user.setContactNumber(createUserDto.getContactNumber());
 
 
-        if (user.getRole().equals(UserRole.TEACHER)) {
-            if (createUserDto.getSchoolUnitId() == null) {
-                throw new DomainException("School unit  is  required for teacher");
-            }
-
-            var schoolUnit = this.schoolUnitRepository.findById(
-                    UUID.fromString(createUserDto.getSchoolUnitId())
-            );
-
-            if (schoolUnit.isEmpty()) {
-                throw new DomainException("School unit not found");
-            }
-
-            user.setSchoolUnit(schoolUnit.get());
+        if (createUserDto.getSchoolUnitId() == null) {
+            throw new DomainException("School unit  is  required for teacher");
         }
 
+        var schoolUnit = this.schoolUnitRepository.findById(
+                UUID.fromString(createUserDto.getSchoolUnitId())
+        );
+
+        if (schoolUnit.isEmpty()) {
+            throw new DomainException("School unit not found");
+        }
+
+        user.setSchoolUnit(schoolUnit.get());
 
         this.userRepository.save(user);
+
     }
 
 
