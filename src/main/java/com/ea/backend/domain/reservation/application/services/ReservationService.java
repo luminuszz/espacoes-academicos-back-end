@@ -41,9 +41,24 @@ public class ReservationService {
     private static final Logger logger = LoggerFactory.getLogger(ReservationService.class);
 
 
+    private static boolean isIsValidReservation(Reservation reservation) {
+        var reservationIntervalIsValid =
+                reservation.getEndDateTime().isAfter(reservation.getStartDateTime());
+
+        int MINIMUM_RESERVATION_TIME = 10; // 10 minutes;
+
+        var reservationIntervalIsMoreOrEqualToMinimum =
+                reservation
+                        .getEndDateTime()
+                        .isAfter(reservation.getStartDateTime().plusMinutes(MINIMUM_RESERVATION_TIME));
+
+
+        return reservationIntervalIsValid && reservationIntervalIsMoreOrEqualToMinimum;
+    }
+
+
     @Transactional
     public void createReservation(CreateReservationDto dto) {
-
 
         var user = this.userRepository.findUserById(UUID.fromString(dto.getUserId()))
                 .orElseThrow(() -> new DomainException("User not found"));
@@ -70,19 +85,7 @@ public class ReservationService {
         reservation.setEndDateTime(dto.getEndDateTime());
         reservation.setStatus(ReservationStatus.PENDING);
 
-        var reservationIntervalIsValid =
-                reservation.getEndDateTime().isAfter(reservation.getStartDateTime());
-
-        // in minutes
-        int MINIMUM_RESERVATION_TIME = 30;
-
-        var reservationIntervalIsMoreOrEqualToMinimum =
-                reservation
-                        .getEndDateTime()
-                        .isAfter(reservation.getStartDateTime().plusMinutes(MINIMUM_RESERVATION_TIME));
-
-        var isValidReservation =
-                reservationIntervalIsValid && reservationIntervalIsMoreOrEqualToMinimum;
+        var isValidReservation = isIsValidReservation(reservation);
 
         if (!isValidReservation) {
             throw new DomainException("Invalid reservation interval");
@@ -102,6 +105,7 @@ public class ReservationService {
         this.reservationRepository.save(reservation);
 
     }
+
 
     @Transactional
     public void cancelReservation(UUID reservationId) {

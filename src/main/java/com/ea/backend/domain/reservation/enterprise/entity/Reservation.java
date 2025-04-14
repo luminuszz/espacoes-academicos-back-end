@@ -4,12 +4,13 @@ import com.ea.backend.domain.space.enterprise.AcademicSpace;
 import com.ea.backend.domain.user.enterprise.entity.User;
 import com.ea.backend.shared.DomainEntity;
 import jakarta.persistence.*;
-import java.io.Serializable;
-import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.io.Serializable;
+import java.time.LocalDateTime;
 
 @Setter
 @Getter
@@ -29,14 +30,14 @@ public class Reservation extends DomainEntity implements Serializable {
     @Column(nullable = false)
     private LocalDateTime endDateTime;
 
-
     @ManyToOne
     @JoinColumn(name = "academic_space_id", nullable = false)
     private AcademicSpace academicSpace;
 
-  @ManyToOne
-  @JoinColumn(name = "user_id", nullable = false)
-  private User user;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, columnDefinition = "VARCHAR(255) DEFAULT 'PENDING'")

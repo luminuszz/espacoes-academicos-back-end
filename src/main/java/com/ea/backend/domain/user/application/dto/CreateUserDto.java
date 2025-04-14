@@ -29,7 +29,6 @@ public class CreateUserDto {
 
     private String schoolUnitId;
 
-
     public UserRole toDomainRole() {
         return UserRole.valueOf(role);
     }

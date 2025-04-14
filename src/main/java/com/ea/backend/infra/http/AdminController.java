@@ -26,7 +26,7 @@ import java.util.UUID;
 @RestController
 @PreAuthorize("hasRole('ROLE_ADMIN')")
 @RequestMapping("/admin")
-@Tag(name = "Admin", description = "Admin routes ")
+@Tag(name = "Admin", description = "Admin routes")
 public class AdminController {
 
     private final UserService userService;
@@ -48,6 +48,10 @@ public class AdminController {
   @PostMapping("/users")
   @Operation
   public ResponseEntity<?> createUser(@RequestBody @Valid CreateUserDto dto) throws BadRequestException {
+
+
+      System.out.println(dto.getSchoolUnitId());
+
 
       switch (dto.toDomainRole()) {
           case ADMIN -> this.userService.createAdminUser(dto);
@@ -128,7 +132,10 @@ public class AdminController {
 
   @GetMapping("/reservations")
   public ResponseEntity<PaginatedResponseBuilder<Reservation>> fetchReservationsPaged(
-      @Valid @RequestParam("page") int page, @RequestParam("pageSize") int pageSize) {
+          @Valid
+          @RequestParam("page") int page,
+          @RequestParam("pageSize") int pageSize
+  ) {
 
 
       return ResponseEntity.ok(new PaginatedResponseBuilder<>(this.reservationService.fetchReservationsPaginated(page - 1, pageSize)));

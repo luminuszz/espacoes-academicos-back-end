@@ -29,7 +29,6 @@ public class ReservationController {
     @PatchMapping("/{reservationId}/checkout")
     public ResponseEntity<?> updateReservationStatus(@PathVariable String reservationId, HttpServletRequest request) {
         try {
-
             var user = (UserAuthenticated) request.getAttribute("user");
 
             this.reservationService.markReservationAsCheckedOut(UUID.fromString(reservationId), user.getUser().getId());
