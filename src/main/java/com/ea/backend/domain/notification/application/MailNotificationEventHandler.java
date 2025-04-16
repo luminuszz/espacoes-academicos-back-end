@@ -18,7 +18,7 @@ public class MailNotificationEventHandler {
         System.out.println("Mail Notification Event Handler onHandleReservationCanceledEvent");
 
         var reservation = event.getReservation();
-        this.mailProvider.sendEmail(reservation.getUser().getEmail(), "Reserva Cancelada", "Sua reserva foi cancelada com sucesso");
+        //    this.mailProvider.sendEmail(reservation.getUser().getEmail(), "Reserva Cancelada", "Sua reserva foi cancelada com sucesso");
 
     }
 

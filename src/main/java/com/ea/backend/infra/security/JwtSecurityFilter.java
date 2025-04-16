@@ -23,14 +23,18 @@ public class JwtSecurityFilter extends OncePerRequestFilter {
     @Autowired
     private UserDetailsService userDetailsService;
 
-  @Override
+
+    private static final String JWT_REGEX = "^[A-Za-z0-9-_]+\\.[A-Za-z0-9-_]+\\.[A-Za-z0-9-_]+$";
+
+    @Override
   protected void doFilterInternal(
       HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
       throws IOException, ServletException {
 
-      var token = this.recoverToken(request);
 
-      if (token != null) {
+        var token = this.recoverToken(request);
+
+        if (token != null && !request.getServletPath().startsWith("/auth/sign-in")) {
           var userEmail = tokenService.validateToken(token);
           UserDetails existsUser = this.userDetailsService.loadUserByUsername(userEmail);
 
@@ -60,7 +64,9 @@ public class JwtSecurityFilter extends OncePerRequestFilter {
                 .replace("null", "");
 
         return Optional.of(authToken)
+                .filter(token -> !token.isEmpty())
                 .filter(token -> !token.isBlank())
+                .filter(token -> token.matches(JWT_REGEX))
                 .orElse(null);
     }
 

@@ -96,7 +96,6 @@ public class SecurityConfig {
                     session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                     .requestMatchers(HttpMethod.POST, "/auth/sign-in").permitAll()
-                    .requestMatchers(HttpMethod.POST, "/auth/sign-up").permitAll()
                     .requestMatchers("v3/api-docs/**", "/swagger-ui/**", "swagger-ui.html", "swagger-config").permitAll()
                     .anyRequest().authenticated()
             ).addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
