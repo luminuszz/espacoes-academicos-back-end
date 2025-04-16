@@ -8,6 +8,7 @@ import com.ea.backend.domain.reservation.enterprise.events.ReservationCanceledEv
 import com.ea.backend.domain.space.application.repository.AcademicSpaceRepository;
 import com.ea.backend.domain.user.application.repository.UserRepository;
 import com.ea.backend.shared.DomainException;
+import com.ea.backend.shared.DomainExceptionCode;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,7 +76,7 @@ public class ReservationService {
         var userHasPendingReservation = this.reservationRepository.findReservationsByUserIdAndStatus(user.getId(), ReservationStatus.PENDING);
 
         if (!userHasPendingReservation.isEmpty()) {
-            throw new DomainException("User already has a pending reservation");
+            throw new DomainException("User already has a pending reservation", DomainExceptionCode.USER_HAS_PENDING_RESERVATIONS);
         }
 
 
@@ -99,7 +100,7 @@ public class ReservationService {
         );
 
         if(!overlappingReservations.isEmpty()) {
-            throw new DomainException("There is already a reservation for this space in this period");
+            throw new DomainException("There is already a reservation for this space in this period", DomainExceptionCode.RESERVATION_INTERVAL_OVERLAP);
         }
 
         this.reservationRepository.save(reservation);
