@@ -6,12 +6,13 @@ import com.ea.backend.domain.space.enterprise.AcademicSpace;
 import com.ea.backend.domain.space.enterprise.SpaceStatus;
 import com.ea.backend.shared.DomainException;
 import com.ea.backend.shared.DomainExceptionCode;
-import java.util.List;
-import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.UUID;
 
 @Service
 public class AcademicSpaceService {
@@ -68,4 +69,10 @@ public class AcademicSpaceService {
   public List<AcademicSpace> fetchAllAvailableAcademicSpaces() {
     return this.academicSpaceRepository.findAllByStatus(SpaceStatus.AVAILABLE);
   }
+
+
+    public List<AcademicSpace> fetchAllSpaces() {
+        return this.academicSpaceRepository.findAll();
+    }
+
 }

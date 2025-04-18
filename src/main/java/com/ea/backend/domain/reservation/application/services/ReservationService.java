@@ -165,4 +165,38 @@ public class ReservationService {
 
       return this.reservationRepository.findAllByUserId(userId, PageRequest.of(page, pageSize));
   }
+
+
+    public Page<Reservation> fetchReservationWithFilterPaginated(
+            int page,
+            int pageSize,
+            Optional<String> filterColumn,
+            Optional<String> filterValue
+    ) {
+
+        var pageRequest = PageRequest.of(page, pageSize);
+
+        if (filterColumn.isEmpty() || filterValue.isEmpty()) {
+            return this.reservationRepository.findAll(pageRequest);
+        }
+
+        var column = filterColumn.get();
+        var value = filterValue.get();
+
+        switch (column) {
+            case "status" -> {
+                return this.reservationRepository.findAllByStatus(ReservationStatus.valueOf(value), pageRequest);
+            }
+            case "teacher" -> {
+                return this.reservationRepository.findAllByUserName(value, pageRequest);
+            }
+            case "space" -> {
+                return this.reservationRepository.findAllByAcademicSpaceRoomName(value, pageRequest);
+            }
+            default -> {
+                throw new DomainException("Invalid filter column");
+            }
+        }
+
+    }
 }

@@ -4,6 +4,7 @@ import com.ea.backend.domain.reservation.enterprise.entity.Reservation;
 import com.ea.backend.domain.reservation.enterprise.entity.ReservationStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -48,11 +49,31 @@ public interface ReservationRepository extends JpaRepository<Reservation, UUID> 
 
   List<Map<String, Object>> countReservationsByDayOfWeek();
 
-    //  @EntityGraph(attributePaths = {"user", "academicSpace"})
-  Page<Reservation> findAllBy(PageRequest pageRequest);
+
+    Page<Reservation> findAllBy(PageRequest pageRequest);
 
   Page<Reservation> findAllByUserIdAndStatus(
       UUID userId, ReservationStatus status, PageRequest pageRequest);
 
   Page<Reservation> findAllByUserId(UUID userId, PageRequest pageRequest);
+
+    Page<Reservation> findAllByStatus(ReservationStatus status, Pageable pageable);
+
+
+    @Query(
+            value = "SELECT r FROM reservations r " +
+                    "JOIN r.user u " +
+                    "WHERE u.name LIKE CONCAT('%', :name, '%')"
+    )
+    Page<Reservation> findAllByUserName(@Param("name") String name, Pageable pageable);
+
+
+    @Query(
+            value = "SELECT r FROM reservations r " +
+                    "INNER JOIN r.academicSpace ac " +
+                    "WHERE ac.roomName LIKE CONCAT('%', :name, '%')"
+    )
+    Page<Reservation> findAllByAcademicSpaceRoomName(@Param("name") String name, Pageable pageable);
+
+
 }

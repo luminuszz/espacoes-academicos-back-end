@@ -21,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -85,6 +86,7 @@ public class AdminController {
     return ResponseEntity.ok().body("User updated successfully");
   }
 
+
   @GetMapping("/spaces")
   @Operation
   @ApiResponse(responseCode = "200")
@@ -101,6 +103,13 @@ public class AdminController {
       );
 
   }
+
+    @GetMapping("/spaces/all")
+    @Operation
+    @ApiResponse(responseCode = "200")
+    public ResponseEntity<?> listAllSpaces() {
+        return ResponseEntity.ok(this.academicSpaceService.fetchAllSpaces());
+    }
 
 
     @PostMapping("/spaces")
@@ -134,18 +143,23 @@ public class AdminController {
   public ResponseEntity<PaginatedResponseBuilder<Reservation>> fetchReservationsPaged(
           @Valid
           @RequestParam("page") int page,
-          @RequestParam("pageSize") int pageSize
+          @RequestParam("pageSize") int pageSize,
+          @RequestParam(value = "nmFilterColumn", required = false) String filterColumn,
+          @RequestParam(value = "nmFilterValue", required = false) String filterValue
+
+
   ) {
-
-
-      return ResponseEntity.ok(new PaginatedResponseBuilder<>(this.reservationService.fetchReservationsPaginated(page - 1, pageSize)));
+      return ResponseEntity.ok(new PaginatedResponseBuilder<>(
+              this.reservationService.fetchReservationWithFilterPaginated(
+                      page - 1, pageSize,
+                      Optional.ofNullable(filterColumn),
+                      Optional.ofNullable(filterValue)
+              )));
   }
 
     @PatchMapping("/reservations/{reservationId}/cancel")
     public ResponseEntity<?> cancelReservation(@PathVariable @Valid String reservationId) {
-
         this.reservationService.cancelReservation(UUID.fromString(reservationId));
-
         return ResponseEntity.ok().body("Reservation cancelled successfully");
 
     }
