@@ -4,7 +4,7 @@ public enum ReservationStatus {
     CONFIRMED_BY_THE_USER("CONFIRMED_BY_THE_USER"),
     CONFIRMED_BY_THE_ENTERPRISE("CONFIRMED_BY_THE_ENTERPRISE"),
     CANCELED("CANCELED"),
-    PENDING("PENDING");
+    SCHEDULED("SCHEDULED");
 
     private final String role;
 

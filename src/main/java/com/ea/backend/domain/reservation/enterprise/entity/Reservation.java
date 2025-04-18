@@ -44,8 +44,8 @@ public class Reservation extends DomainEntity implements Serializable {
     private ReservationStatus status;
 
 
-    public boolean isPending() {
-        return this.status.equals(ReservationStatus.PENDING);
+    public boolean isScheduled() {
+        return this.status.equals(ReservationStatus.SCHEDULED);
     }
 
     public boolean isCanceled() {

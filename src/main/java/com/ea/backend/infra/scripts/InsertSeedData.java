@@ -180,7 +180,7 @@ public class InsertSeedData implements CommandLineRunner {
           String[] statuses = {
             ReservationStatus.CONFIRMED_BY_THE_ENTERPRISE.toString(),
             ReservationStatus.CONFIRMED_BY_THE_USER.toString(),
-            ReservationStatus.PENDING.toString(),
+                  ReservationStatus.SCHEDULED.toString(),
             ReservationStatus.CANCELED.toString()
           };
           String status = statuses[random.nextInt(statuses.length)];

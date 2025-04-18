@@ -73,7 +73,7 @@ public class ReservationService {
             throw new DomainException("Space is not available");
         }
 
-        var userHasPendingReservation = this.reservationRepository.findReservationsByUserIdAndStatus(user.getId(), ReservationStatus.PENDING);
+        var userHasPendingReservation = this.reservationRepository.findReservationsByUserIdAndStatus(user.getId(), ReservationStatus.SCHEDULED);
 
         if (!userHasPendingReservation.isEmpty()) {
             throw new DomainException("User already has a pending reservation", DomainExceptionCode.USER_HAS_PENDING_RESERVATIONS);
@@ -84,7 +84,7 @@ public class ReservationService {
         reservation.setAcademicSpace(academicSpace);
         reservation.setStartDateTime(dto.getStartDateTime());
         reservation.setEndDateTime(dto.getEndDateTime());
-        reservation.setStatus(ReservationStatus.PENDING);
+        reservation.setStatus(ReservationStatus.SCHEDULED);
 
         var isValidReservation = isIsValidReservation(reservation);
 
