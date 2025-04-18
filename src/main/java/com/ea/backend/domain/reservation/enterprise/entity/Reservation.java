@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 @Setter
 @Getter
@@ -24,11 +24,11 @@ public class Reservation extends DomainEntity implements Serializable {
     @GeneratedValue(strategy =  GenerationType.UUID)
     private String id;
 
-    @Column(nullable = false)
-    private LocalDateTime startDateTime;
+    @Column(nullable = false, columnDefinition = "TIMESTAMP WITH TIME ZONE")
+    private OffsetDateTime startDateTime;
 
-    @Column(nullable = false)
-    private LocalDateTime endDateTime;
+    @Column(nullable = false, columnDefinition = "TIMESTAMP WITH TIME ZONE")
+    private OffsetDateTime endDateTime;
 
     @ManyToOne
     @JoinColumn(name = "academic_space_id", nullable = false)

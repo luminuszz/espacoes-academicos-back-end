@@ -19,6 +19,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -46,15 +47,15 @@ public class ReservationService {
         var reservationIntervalIsValid =
                 reservation.getEndDateTime().isAfter(reservation.getStartDateTime());
 
-        int MINIMUM_RESERVATION_TIME = 10; // 10 minutes;
+
 
         var reservationIntervalIsMoreOrEqualToMinimum =
                 reservation
                         .getEndDateTime()
-                        .isAfter(reservation.getStartDateTime().plusMinutes(MINIMUM_RESERVATION_TIME));
+                        .isAfter(reservation.getStartDateTime());
 
 
-        return reservationIntervalIsValid && reservationIntervalIsMoreOrEqualToMinimum;
+        return reservationIntervalIsValid;
     }
 
 
@@ -82,14 +83,14 @@ public class ReservationService {
 
         reservation.setUser(user);
         reservation.setAcademicSpace(academicSpace);
-        reservation.setStartDateTime(dto.getStartDateTime());
-        reservation.setEndDateTime(dto.getEndDateTime());
+        reservation.setStartDateTime(dto.getStartDateTime().withOffsetSameInstant(ZoneOffset.UTC));
+        reservation.setEndDateTime(dto.getEndDateTime().withOffsetSameInstant(ZoneOffset.UTC));
         reservation.setStatus(ReservationStatus.SCHEDULED);
 
         var isValidReservation = isIsValidReservation(reservation);
 
         if (!isValidReservation) {
-            throw new DomainException("Invalid reservation interval");
+            throw new DomainException("Invalid reservation interval", DomainExceptionCode.DOMAIN_ERROR);
         }
 
 
@@ -98,6 +99,7 @@ public class ReservationService {
                 reservation.getStartDateTime(),
                 reservation.getEndDateTime()
         );
+
 
         if(!overlappingReservations.isEmpty()) {
             throw new DomainException("There is already a reservation for this space in this period", DomainExceptionCode.RESERVATION_INTERVAL_OVERLAP);

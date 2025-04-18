@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -19,17 +20,17 @@ public interface ReservationRepository extends JpaRepository<Reservation, UUID> 
 
     @Query(
             "SELECT r FROM reservations r WHERE r.academicSpace.id = :academicSpaceId AND " +
-                    "(r.startDateTime < :endDateTime AND r.endDateTime > :startDateTime)" + " AND r.status = 'PENDING'"
+                    "(r.startDateTime < :endDateTime AND r.endDateTime > :startDateTime)" + " AND r.status = 'SCHEDULED' "
     )
     List<Reservation> findOverlappingReservations(
             @Param("academicSpaceId") UUID academicSpaceId,
-            @Param("startDateTime") LocalDateTime startDateTime,
-            @Param("endDateTime") LocalDateTime endDateTime
+            @Param("startDateTime") OffsetDateTime startDateTime,
+            @Param("endDateTime") OffsetDateTime endDateTime
     );
 
     Optional<Reservation> findReservationById(String id);
 
-    @Query("SELECT r FROM reservations r WHERE r.endDateTime < :now AND r.status = 'PENDING'")
+    @Query("SELECT r FROM reservations r WHERE r.endDateTime < :now AND r.status = 'SCHEDULED'")
     List<Reservation> findExpiredReservations(@Param("now") LocalDateTime now);
 
     Optional<Reservation> findReservationByIdAndUser_Id(String id, UUID userId);

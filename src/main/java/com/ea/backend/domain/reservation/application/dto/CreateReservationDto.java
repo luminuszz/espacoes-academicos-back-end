@@ -5,9 +5,8 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.validator.constraints.UUID;
-import org.springframework.format.annotation.DateTimeFormat;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 @Setter
 @Getter
@@ -18,15 +17,13 @@ public class CreateReservationDto {
     private String academicSpaceId;
 
 
-    @DateTimeFormat
+
     @NotNull
-    private LocalDateTime startDateTime;
+    private OffsetDateTime startDateTime;
 
-    @DateTimeFormat
     @NotNull
-    private LocalDateTime endDateTime;
-
-
+    private OffsetDateTime endDateTime;
+    
     private String userId;
 
 }
