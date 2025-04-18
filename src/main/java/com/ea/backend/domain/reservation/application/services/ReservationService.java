@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -44,18 +45,8 @@ public class ReservationService {
 
 
     private static boolean isIsValidReservation(Reservation reservation) {
-        var reservationIntervalIsValid =
-                reservation.getEndDateTime().isAfter(reservation.getStartDateTime());
 
-
-
-        var reservationIntervalIsMoreOrEqualToMinimum =
-                reservation
-                        .getEndDateTime()
-                        .isAfter(reservation.getStartDateTime());
-
-
-        return reservationIntervalIsValid;
+        return reservation.getEndDateTime().isAfter(reservation.getStartDateTime());
     }
 
 
@@ -158,14 +149,15 @@ public class ReservationService {
       UUID userId, Optional<String> status, int page, int pageSize) {
 
 
-      logger.info(status.toString());
+      var pageRequest = PageRequest.of(page, pageSize, Sort.by("createdAt").descending());
+
 
       if (status.isPresent()) {
       return this.reservationRepository.findAllByUserIdAndStatus(
-          userId, ReservationStatus.valueOf(status.get()), PageRequest.of(page, pageSize));
+              userId, ReservationStatus.valueOf(status.get()), pageRequest);
     }
 
-      return this.reservationRepository.findAllByUserId(userId, PageRequest.of(page, pageSize));
+      return this.reservationRepository.findAllByUserId(userId, pageRequest);
   }
 
 
@@ -176,7 +168,7 @@ public class ReservationService {
             Optional<String> filterValue
     ) {
 
-        var pageRequest = PageRequest.of(page, pageSize);
+        var pageRequest = PageRequest.of(page, pageSize, Sort.by("createdAt").descending());
 
         if (filterColumn.isEmpty() || filterValue.isEmpty()) {
             return this.reservationRepository.findAll(pageRequest);
