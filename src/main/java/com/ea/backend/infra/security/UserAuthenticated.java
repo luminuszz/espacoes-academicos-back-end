@@ -29,6 +29,7 @@ public class UserAuthenticated implements UserDetails {
         };
     }
 
+
     @Override
     public String getPassword() {
         return user.getPasswordHash();

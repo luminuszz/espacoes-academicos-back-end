@@ -8,9 +8,13 @@ import org.hibernate.validator.constraints.UUID;
 
 import java.time.OffsetDateTime;
 
+
 @Setter
 @Getter
-public class CreateReservationDto {
+public class UpdateReservationDto {
+    @Setter
+    @Getter
+
     @UUID
     @NotBlank
     @NotNull
@@ -22,7 +26,9 @@ public class CreateReservationDto {
 
     @NotNull
     private OffsetDateTime endDateTime;
-    
-    private String userId;
+
+    private java.util.UUID userId;
+
+    private java.util.UUID reservationId;
 
 }

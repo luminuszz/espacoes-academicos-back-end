@@ -1,5 +1,6 @@
 package com.ea.backend.infra.http;
 
+import com.ea.backend.domain.reservation.application.dto.UpdateReservationDto;
 import com.ea.backend.domain.reservation.application.services.ReservationService;
 import com.ea.backend.domain.reservation.enterprise.entity.Reservation;
 import com.ea.backend.domain.space.application.dto.ChangeSpaceStatusDto;
@@ -12,9 +13,11 @@ import com.ea.backend.domain.user.application.dto.CreateUserDto;
 import com.ea.backend.domain.user.application.dto.UpdateUserDto;
 import com.ea.backend.domain.user.application.repository.UserProjection;
 import com.ea.backend.infra.http.model.PaginatedResponseBuilder;
+import com.ea.backend.infra.security.UserAuthenticated;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.apache.coyote.BadRequestException;
 import org.springframework.http.ResponseEntity;
@@ -157,6 +160,7 @@ public class AdminController {
               )));
   }
 
+
     @PatchMapping("/reservations/{reservationId}/cancel")
     public ResponseEntity<?> cancelReservation(@PathVariable @Valid String reservationId) {
         this.reservationService.cancelReservation(UUID.fromString(reservationId));
@@ -165,7 +169,26 @@ public class AdminController {
     }
 
 
-  @GetMapping("/metrics/count")
+    @PutMapping("/reservations/{reservationId}")
+    public ResponseEntity<?> updateReservation(
+            @PathVariable String reservationId,
+            @RequestBody @Valid UpdateReservationDto reservation,
+            HttpServletRequest request
+    ) {
+        var user = (UserAuthenticated) request.getAttribute("user");
+
+
+        reservation.setUserId(user.getUser().getId());
+        reservation.setReservationId(UUID.fromString(reservationId));
+
+        this.reservationService.updateReservation(reservation);
+
+
+        return ResponseEntity.ok().body("Reservation updated successfully");
+    }
+
+
+    @GetMapping("/metrics/count")
   public ResponseEntity<?> getMetrics() {
     return ResponseEntity.ok().body(this.metricService.getCounts());
   }
