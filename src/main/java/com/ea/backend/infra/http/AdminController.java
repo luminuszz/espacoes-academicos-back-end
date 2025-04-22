@@ -90,6 +90,14 @@ public class AdminController {
   }
 
 
+    @DeleteMapping
+    @Operation
+    public ResponseEntity<?> deleteUser(@RequestParam String userId) {
+        this.userService.deleteUser(userId);
+        return ResponseEntity.ok().body("User deleted successfully");
+    }
+
+
   @GetMapping("/spaces")
   @Operation
   @ApiResponse(responseCode = "200")

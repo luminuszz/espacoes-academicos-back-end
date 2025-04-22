@@ -1,5 +1,6 @@
 package com.ea.backend.domain.user.enterprise.entity;
 
+import com.ea.backend.domain.reservation.enterprise.entity.Reservation;
 import com.ea.backend.domain.school.enterprise.entity.SchoolUnit;
 import com.ea.backend.shared.DomainEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -9,6 +10,7 @@ import lombok.Setter;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.List;
 import java.util.UUID;
 
 @Entity(name = "users")
@@ -51,5 +53,8 @@ public class User extends DomainEntity implements Serializable {
     @JoinColumn(name = "school_id", nullable = true)
     private SchoolUnit schoolUnit;
 
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Reservation> reservations;
 
 }

@@ -111,4 +111,13 @@ public class UserService {
 
     this.userRepository.save(user);
   }
+
+
+    public void deleteUser(String userId) {
+        var user = this.userRepository.findUserById(UUID.fromString(userId))
+                .orElseThrow(() -> new DomainException("User not found"));
+
+        this.userRepository.delete(user);
+    }
+
 }
