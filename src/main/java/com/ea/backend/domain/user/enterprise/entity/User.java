@@ -53,7 +53,7 @@ public class User extends DomainEntity implements Serializable {
     @JoinColumn(name = "school_id", nullable = true)
     private SchoolUnit schoolUnit;
 
-
+    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Reservation> reservations;
 

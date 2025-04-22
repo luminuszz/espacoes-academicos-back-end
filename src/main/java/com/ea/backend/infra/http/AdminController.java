@@ -90,9 +90,9 @@ public class AdminController {
   }
 
 
-    @DeleteMapping
+    @DeleteMapping("/users/{userId}")
     @Operation
-    public ResponseEntity<?> deleteUser(@RequestParam String userId) {
+    public ResponseEntity<?> deleteUser(@PathVariable String userId) {
         this.userService.deleteUser(userId);
         return ResponseEntity.ok().body("User deleted successfully");
     }
