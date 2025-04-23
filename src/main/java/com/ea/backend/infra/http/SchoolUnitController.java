@@ -33,6 +33,11 @@ public class SchoolUnitController {
         return service.create(dto);
     }
 
+    @GetMapping
+    public List<SchoolUnit> listAll() {
+        return service.findAll();
+    }
+
 
     @GetMapping("/{schoolUnitId}/teachers")
     @ApiResponse(responseCode = "200")
@@ -43,10 +48,10 @@ public class SchoolUnitController {
         return ResponseEntity.ok(this.service.getTeachersBySchoolUnit(UUID.fromString(schoolUnitId)));
     }
 
-
-    @GetMapping
-    public List<SchoolUnit> listAll() {
-        return service.findAll();
+    @DeleteMapping("/{schoolUnitId}")
+    public ResponseEntity<String> delete(@PathVariable String schoolUnitId) {
+        service.delete(UUID.fromString(schoolUnitId));
+        return ResponseEntity.ok("School unit deleted successfully");
     }
 
 

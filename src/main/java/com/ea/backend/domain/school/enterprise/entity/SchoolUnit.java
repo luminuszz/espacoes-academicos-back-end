@@ -1,10 +1,13 @@
 package com.ea.backend.domain.school.enterprise.entity;
 
+import com.ea.backend.domain.user.enterprise.entity.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -42,6 +45,10 @@ public class SchoolUnit {
     public void prePersist() {
         this.createdAt = LocalDateTime.now();
     }
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "schoolUnit", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<User> users;
 
 
 }

@@ -43,4 +43,11 @@ public class SchoolUnitService {
 
     }
 
+
+    public void delete(UUID schoolUnitId) {
+        var unit = this.repository.findById(schoolUnitId)
+                .orElseThrow(() -> new IllegalArgumentException("School unit not found"));
+        this.repository.delete(unit);
+    }
+
 }
